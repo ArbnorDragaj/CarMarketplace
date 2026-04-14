@@ -30,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Login</title>
 
 <link href="Style/login.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 
@@ -47,13 +48,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="text" name="username" placeholder="Username">
             </div>
 
-            <div class="input-box">
-                <input type="password" name="password" placeholder="Password">
-            </div>
+         <div class="input-box">
+<div class="input-box">
+    <input type="password" id="password" name="password" placeholder="Password" required>
+    <i class="fa-solid fa-eye toggle" id="eye" onclick="togglePassword()"></i>
+</div>
 
             <button class="login-btn">Login</button>
         </form>
     </div>
+<script>
+function togglePassword() {
+    var pass = document.getElementById("password");
+    var eye = document.getElementById("eye");
 
+    if (pass.type === "password") {
+        pass.type = "text";
+        eye.classList.remove("fa-eye");
+        eye.classList.add("fa-eye-slash");
+    } else {
+        pass.type = "password";
+        eye.classList.remove("fa-eye-slash");
+        eye.classList.add("fa-eye");
+    }
+}
+</script>
 </body>
 </html>

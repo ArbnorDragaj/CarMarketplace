@@ -27,20 +27,6 @@ body {
   margin-bottom: 25px;
 }
 
-.input-box {
-  margin-bottom: 15px;
-}
-
-.input-box input {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  background: #0a1628;
-  color: white;
-  outline: none;
-}
-
 .input-box input::placeholder {
   color: #aaa;
 }
@@ -63,4 +49,39 @@ body {
 .error {
   color: red;
   margin-bottom: 10px;
+}
+
+.input-box {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.input-box input {
+  .input-box input {
+    width: 100%;
+    padding: 12px 45px 12px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #0a1628;
+    color: white;
+    outline: none;
+  }
+}
+
+.toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #aaa;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle:hover {
+  color: #f1c40f;
 }
