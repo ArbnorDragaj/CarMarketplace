@@ -19,6 +19,7 @@ $themeColor = isset($_COOKIE['themeColor']) ? $_COOKIE['themeColor'] : 'blue';
     <h1>Mirësevini në AutoShqip</h1>
     <p>Shiko veturat më të fundit dhe lajmet më interesante!</p>
     <p>Shiko veturat më të fundit dhe lajmet më interesante!</p>
+    <p>Shiko veturat më të fundit dhe lajmet më interesante!</p>
 </section>
 <section class="cars-preview">
     <h2>Veturat kryesore</h2>
