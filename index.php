@@ -1,13 +1,13 @@
 <?php
 // Mund të shtosh variabla këtu për të ndryshuar titullin e faqes në mënyrë dinamike
-$site_name = "Projekti Im";
+$site_name = "CarMarketPlace";
 ?>
 <!DOCTYPE html>
 <html lang="sq">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $page_title ?? 'Faqja Kryesore'; ?></title>
+    <title><?php echo $page_title ?? 'CarMarketPlace'; ?></title>
     <link rel="stylesheet" href="Style/index.css">
 </head>
 <body>
