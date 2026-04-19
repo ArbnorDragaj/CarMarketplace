@@ -1,15 +1,18 @@
-body { margin: 0; font-family: Arial, sans-serif;
-       background-image: url('img/bg photo.avif'); 
+body {  margin: 0; font-family: Arial, sans-serif;
+        background-image: url('../img/car 4.jpg'); 
         background-size: cover;        
         background-position: center;  
         background-repeat: no-repeat;  
-        background-attachment: fixed; }
+        background-attachment: fixed;
+        
+     }
 
 .main-header {
-    background-color: #131314;
+    /* background-color: #131314; */
     color: white;
     padding: 1rem 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    /*box-shadow: 0 2px 5px rgba(0,0,0,0.1); */
+    background-color: transparent;
 }
 
 .container {
@@ -42,8 +45,13 @@ body { margin: 0; font-family: Arial, sans-serif;
     text-decoration: none;
     font-weight: bold;
     transition: 0.3s;
+    font-size: 20px;
+    
 }
 
 .navbar ul li a:hover {
-    color: #3498db;
+    color: #3f4549;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    transition: 1s;
 }
