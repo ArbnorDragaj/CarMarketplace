@@ -32,4 +32,24 @@ if (isset($_GET['logout'])) {
     exit();
 }
 
+/* LOGIN */
+if (isset($_POST['login'])) {
+    $u = $_POST['username'];
+    $p = $_POST['password'];
+
+    if (isset($users[$u]) && $users[$u]['password'] === $p) {
+        $_SESSION['user'] = $u;
+        $_SESSION['role'] = $users[$u]['role'];
+    } else {
+        $error = "Login gabim!";
+    }
+}
+
+/* LOGOUT */
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: blog.php");
+    exit();
+}
+
 ?>
