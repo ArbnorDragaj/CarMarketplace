@@ -55,3 +55,9 @@ body {  margin: 0; font-family: Arial, sans-serif;
     text-underline-offset: 6px;
     transition: 1s;
 }
+p {
+    color: white;
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 20px 0;
+}
