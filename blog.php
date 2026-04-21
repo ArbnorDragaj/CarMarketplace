@@ -34,7 +34,7 @@ if (isset($_GET['logout'])) {
     exit();
 }
 
-/* ADD POST */
+/* shtojm poste */
 if (isset($_POST['add_post']) && $_SESSION['role'] === 'admin') {
 
     $imagePath = "";
@@ -67,7 +67,7 @@ if (isset($_POST['add_post']) && $_SESSION['role'] === 'admin') {
     exit();
 }
 
-/* DELETE POST */
+/* fshijm poste */
 if (isset($_GET['delete']) && $_SESSION['role'] === 'admin') {
     $id = $_GET['delete'];
 
@@ -77,6 +77,35 @@ if (isset($_GET['delete']) && $_SESSION['role'] === 'admin') {
 
     unset($posts[$id]);
     $posts = array_values($posts);
+
+    file_put_contents("posts.json", json_encode($posts));
+    header("Location: blog.php");
+    exit();
+}
+/* per me editu poste */
+if (isset($_POST['edit_post']) && $_SESSION['role'] === 'admin') {
+
+    $id = $_POST['id'];
+
+    $posts[$id]['title'] = $_POST['title'];
+    $posts[$id]['content'] = $_POST['content'];
+
+    if (!empty($_FILES['image']['name'])) {
+
+        $targetDir = "uploads/";
+        if (!is_dir($targetDir)) mkdir($targetDir);
+
+        $fileName = time() . "_" . basename($_FILES["image"]["name"]);
+        $targetFile = $targetDir . $fileName;
+
+        $allowed = ['jpg','jpeg','png','gif'];
+        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+        if (in_array($ext, $allowed)) {
+            move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile);
+            $posts[$id]['image'] = $targetFile;
+        }
+    }
 
     file_put_contents("posts.json", json_encode($posts));
     header("Location: blog.php");
