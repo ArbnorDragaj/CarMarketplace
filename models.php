@@ -27,4 +27,26 @@ echo "<hr>";
 echo "<h3>Your favorite brand: " . $favorite . "</h3>";
 
 
+$cars = [
+    ["brand" => "Audi", "model" => "A5"],
+    ["brand" => "BMW", "model" => "X5"],
+    ["brand" => "Tesla", "model" => "Model 3"],
+    ["brand" => "Toyota", "model" => "RAV4"]
+];
+
+echo "<hr>";
+echo "<h2>Car List</h2>";
+
+
+
+foreach ($cars as $car) {
+
+    if ($car['brand'] == $favorite) {
+        echo "<p><strong>⭐ " . $car['brand'] . " " . $car['model'] . " (Favorite)</strong></p>";
+    } else {
+        echo "<p>" . $car['brand'] . " " . $car['model'] . "</p>";
+    }
+}
+
+
 ?>
