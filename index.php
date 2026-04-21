@@ -23,11 +23,15 @@ $site_name = "CarMarketPlace";
                 <li><a href="rreth-nesh.php">Rreth Nesh</a></li>
                 <li><a href="sherbimet.php">Shërbimet</a></li>
                 <li><a href="kontakti.php">Kontakti</a></li>
-                <li><a href="kontakti.php">Blog</a></li>
+                <li><a href="kontakti.php" class="blog">Blog</a></li>
             </ul>
         </nav>
     </div>
 </header>
-<p class="p">Find your <strong>perfect</strong> car. 
+<p>Find your <strong>Perfect</strong> car. 
+<br>
+Quality, Guarantee, <strong>Stability</strong> with Us
 </p>
+<button class="btn"><a href="sherbimet.php">Eksploro</a></button>
+
 </body>
