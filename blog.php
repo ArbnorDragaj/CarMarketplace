@@ -47,4 +47,41 @@ if (isset($_GET['logout'])) {
     exit();
 }
 
+/* ADD POST */
+if (isset($_POST['add_post']) && $_SESSION['role'] === 'admin') {
+
+    $imageName = "";
+
+    if (!empty($_FILES['image']['name'])) {
+        $imageName = time() . "_" . $_FILES['image']['name'];
+        move_uploaded_file($_FILES['image']['tmp_name'], "uploads/" . $imageName);
+    }
+
+    $_SESSION['posts'][] = [
+        "title" => $_POST['title'],
+        "content" => $_POST['content'],
+        "image" => $imageName,
+        "date" => date("d M Y")
+    ];
+}
+
+/* DELETE POST */
+if (isset($_GET['delete']) && $_SESSION['role'] === 'admin') {
+    $id = $_GET['delete'];
+    unset($_SESSION['posts'][$id]);
+    $_SESSION['posts'] = array_values($_SESSION['posts']);
+    header("Location: blog.php");
+    exit();
+}
+
+/* EDIT POST */
+if (isset($_POST['edit_save']) && $_SESSION['role'] === 'admin') {
+    $id = $_POST['id'];
+
+    $_SESSION['posts'][$id]['title'] = $_POST['title'];
+    $_SESSION['posts'][$id]['content'] = $_POST['content'];
+
+    header("Location: blog.php");
+    exit();
+}
 ?>
