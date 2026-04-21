@@ -25,12 +25,7 @@ if (isset($_POST['login'])) {
     }
 }
 
-/* LOGOUT */
-if (isset($_GET['logout'])) {
-    session_destroy();
-    header("Location: blog.php");
-    exit();
-}
+
 
 /* LOGIN */
 if (isset($_POST['login'])) {
