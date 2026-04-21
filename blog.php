@@ -7,25 +7,12 @@ $users = [
     "arbnor" => ["password" => "1234", "role" => "user"]
 ];
 
-/* INIT POSTS SESSION */
-if (!isset($_SESSION['posts'])) {
-    $_SESSION['posts'] = [];
+/* POSTS FILE */
+if (!file_exists("posts.json")) {
+    file_put_contents("posts.json", json_encode([]));
 }
 
-/* LOGIN */
-if (isset($_POST['login'])) {
-    $u = $_POST['username'];
-    $p = $_POST['password'];
-
-    if (isset($users[$u]) && $users[$u]['password'] === $p) {
-        $_SESSION['user'] = $u;
-        $_SESSION['role'] = $users[$u]['role'];
-    } else {
-        $error = "Login gabim!";
-    }
-}
-
-
+$posts = json_decode(file_get_contents("posts.json"), true);
 
 /* LOGIN */
 if (isset($_POST['login'])) {
@@ -50,37 +37,48 @@ if (isset($_GET['logout'])) {
 /* ADD POST */
 if (isset($_POST['add_post']) && $_SESSION['role'] === 'admin') {
 
-    $imageName = "";
+    $imagePath = "";
 
     if (!empty($_FILES['image']['name'])) {
-        $imageName = time() . "_" . $_FILES['image']['name'];
-        move_uploaded_file($_FILES['image']['tmp_name'], "uploads/" . $imageName);
+        $targetDir = "uploads/";
+        if (!is_dir($targetDir)) mkdir($targetDir);
+
+        $fileName = time() . "_" . basename($_FILES["image"]["name"]);
+        $targetFile = $targetDir . $fileName;
+
+        $allowed = ['jpg','jpeg','png','gif'];
+        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+        if (in_array($ext, $allowed)) {
+            move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile);
+            $imagePath = $targetFile;
+        }
     }
 
-    $_SESSION['posts'][] = [
+    $posts[] = [
         "title" => $_POST['title'],
         "content" => $_POST['content'],
-        "image" => $imageName,
+        "image" => $imagePath,
         "date" => date("d M Y")
     ];
+
+    file_put_contents("posts.json", json_encode($posts));
+    header("Location: blog.php");
+    exit();
 }
 
 /* DELETE POST */
 if (isset($_GET['delete']) && $_SESSION['role'] === 'admin') {
     $id = $_GET['delete'];
-    unset($_SESSION['posts'][$id]);
-    $_SESSION['posts'] = array_values($_SESSION['posts']);
-    header("Location: blog.php");
-    exit();
-}
 
-/* EDIT POST */
-if (isset($_POST['edit_save']) && $_SESSION['role'] === 'admin') {
-    $id = $_POST['id'];
+    if (!empty($posts[$id]['image']) && file_exists($posts[$id]['image'])) {
+        unlink($posts[$id]['image']);
+    }
 
-    $_SESSION['posts'][$id]['title'] = $_POST['title'];
-    $_SESSION['posts'][$id]['content'] = $_POST['content'];
+    unset($posts[$id]);
+    $posts = array_values($posts);
 
+    file_put_contents("posts.json", json_encode($posts));
     header("Location: blog.php");
     exit();
 }
