@@ -18,3 +18,24 @@ body {
 .contact-form h2 {
     margin-bottom: 20px;
 }
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: #4facfe;
+}
+
+.contact-form textarea {
+    resize: none;
+    height: 100px;
+}
