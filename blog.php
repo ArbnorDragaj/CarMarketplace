@@ -182,3 +182,33 @@ if (isset($_POST['edit_post']) && $_SESSION['role'] === 'admin') {
     <button name="edit_post">Save</button>
 </form>
 
+
+<?php else: ?>
+
+<h3><?php echo $post['title']; ?></h3>
+<p><?php echo $post['content']; ?></p>
+<span><?php echo $post['date']; ?></span>
+
+<?php if ($_SESSION['role'] === 'admin'): ?>
+<div class="actions">
+    <a href="?edit=<?php echo $id; ?>" class="edit">Edit</a>
+    <a href="?delete=<?php echo $id; ?>" class="delete" onclick="return confirm('A je i sigurt?')">Delete</a>
+</div>
+<?php endif; ?>
+
+<?php endif; ?>
+
+</div>
+</div>
+
+<?php endforeach; ?>
+
+</div>
+
+<?php endif; ?>
+
+</div>
+
+<script src="blog.js"></script>
+</body>
+</html>
