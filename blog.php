@@ -159,3 +159,26 @@ if (isset($_POST['edit_post']) && $_SESSION['role'] === 'admin') {
         <button name="add_post">Publish</button>
     </form>
 </div>
+<?php endif; ?>
+
+<div class="grid">
+
+<?php foreach ($posts as $id => $post): ?>
+
+<div class="card">
+<div class="card-body">
+
+<?php if (!empty($post['image'])): ?>
+<img src="<?php echo $post['image']; ?>" class="post-img">
+<?php endif; ?>
+
+<?php if (isset($_GET['edit']) && $_GET['edit'] == $id): ?>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="id" value="<?php echo $id; ?>">
+    <input type="text" name="title" value="<?php echo $post['title']; ?>">
+    <textarea name="content"><?php echo $post['content']; ?></textarea>
+    <input type="file" name="image">
+    <button name="edit_post">Save</button>
+</form>
+
