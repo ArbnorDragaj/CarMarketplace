@@ -112,14 +112,50 @@ if (isset($_POST['edit_post']) && $_SESSION['role'] === 'admin') {
     exit();
 }
 ?>
+
+
+
+
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Modern Blog</title>
+    <link rel="stylesheet" href="Style/blog.css">
 </head>
 <body>
-    
-</body>
-</html>
+
+<div class="container">
+
+<?php if (!isset($_SESSION['user'])): ?>
+
+<div class="login-box">
+    <h2>Login</h2>
+    <?php if (isset($error)) echo "<p class='error'>$error</p>"; ?>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button name="login">Login</button>
+    </form>
+</div>
+
+<?php else: ?>
+
+<div class="top-bar">
+    <h2 style="color:crimson;">Blog Spot</h2>
+    <div>
+        <span><?php echo $_SESSION['user']; ?></span>
+        <a href="?logout=true">Logout</a>
+    </div>
+</div>
+
+<?php if ($_SESSION['role'] === 'admin'): ?>
+<div class="form-box">
+    <h3>Create Post</h3>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="text" name="title" placeholder="Title" required>
+        <textarea name="content" placeholder="Content" required></textarea>
+        <input type="file" name="image">
+        <button name="add_post">Publish</button>
+    </form>
+</div>
