@@ -28,7 +28,7 @@ $site_name = "CarMarketPlace";
         </nav>
     </div>
 </header>
-<p>Find your <strong>Perfect</strong> car. 
+<p>Find your <strong>Perfect</strong> car
 <br>
 Quality, Guarantee, <strong>Stability</strong> with Us
 </p>
