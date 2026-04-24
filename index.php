@@ -1,6 +1,16 @@
 <?php
 // Mund të shtosh variabla këtu për të ndryshuar titullin e faqes në mënyrë dinamike
 $site_name = "CarMarketPlace";
+
+
+session_start();
+
+
+if (!isset($_SESSION['user'])) {
+    header("Location: login.php");
+    exit();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="sq">
