@@ -231,3 +231,68 @@ $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
                 <?php endforeach; ?>
             </div>
         </section>
+        
+        <aside class="sidebar">
+            <div class="side-box">
+                <input type="text" id="searchInput" placeholder="Search posts...">
+            </div>
+
+            <div class="side-box">
+                <h3>Categories</h3>
+                <?php foreach ($categories as $cat): ?>
+                    <div class="cat-row">
+                        <span><?php echo $cat; ?></span>
+                        <b><?php echo count(array_filter($posts, fn($p) => ($p['category'] ?? '') === $cat)); ?></b>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="side-box">
+                <h3>Recent Posts</h3>
+                <?php foreach (array_slice(array_reverse($posts), 0, 4) as $post): ?>
+                    <div class="recent">
+                        <?php if (!empty($post['image'])): ?>
+                            <img src="<?php echo htmlspecialchars($post['image']); ?>">
+                        <?php endif; ?>
+                        <div>
+                            <strong><?php echo htmlspecialchars($post['title']); ?></strong>
+                            <small><?php echo htmlspecialchars($post['date']); ?></small>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </aside>
+
+    </main>
+</div>
+
+<?php if ($_SESSION['role'] === 'admin'): ?>
+<div class="modal" id="postModal">
+    <div class="modal-box">
+        <button class="close" onclick="closeModal()">×</button>
+        <h2>Create New Post</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Post title" required>
+
+            <textarea name="content" placeholder="Write your post..." required></textarea>
+
+            <select name="category">
+                <?php foreach ($categories as $cat): ?>
+                    <option value="<?php echo $cat; ?>"><?php echo $cat; ?></option>
+                <?php endforeach; ?>
+            </select>
+
+            <input type="file" name="image">
+            <button name="add_post">Publish Post</button>
+        </form>
+    </div>
+</div>
+<?php endif; ?>
+
+<script src="script/blog.js"></script>
+
+<?php endif; ?>
+
+</body>
+</html>
