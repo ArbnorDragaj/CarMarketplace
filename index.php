@@ -9,10 +9,13 @@ $site_name = "CarMarketPlace";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title ?? 'CarMarketPlace'; ?></title>
     <link rel="stylesheet" href="Style/index.css">
+    <link rel="stylesheet" href="Style/style.css">
+
 </head>
 <body>
+    <?php include 'header.php'; ?>
 
-<header class="main-header">
+<!-- <header class="main-header">
     <div class="container">
         <div class="logo">
             <h1><a href="index.php"><?php echo $site_name; ?></a></h1>
@@ -27,11 +30,18 @@ $site_name = "CarMarketPlace";
             </ul>
         </nav>
     </div>
-</header>
+</header> -->
+
 <p>Find your <strong>Perfect</strong> car
 <br>
 Quality, Guarantee, <strong>Stability</strong> with Us
 </p>
 <button class="btn"><a href="sherbimet.php">Eksploro</a></button>
+<br>
+<br>
+<br>
+<br>
+
+    <?php include 'footer.php'; ?>
 
 </body>
