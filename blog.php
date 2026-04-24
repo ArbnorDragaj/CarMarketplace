@@ -107,3 +107,31 @@ if (isset($_POST['edit_post']) && isset($_SESSION['role']) && $_SESSION['role'] 
 
 $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Spot</title>
+    <link rel="stylesheet" href="style/blog.css">
+</head>
+<body>
+
+<?php if (!isset($_SESSION['user'])): ?>
+
+<div class="login-page">
+    <div class="login-box">
+        <h1>Blog Spot</h1>
+        <p>Welcome back. Please login to continue.</p>
+
+        <?php if (isset($error)): ?>
+            <div class="error"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
+
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button name="login">Login</button>
+        </form>
+    </div>
+</div>
