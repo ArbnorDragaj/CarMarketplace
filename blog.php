@@ -209,6 +209,6 @@ if (isset($_POST['edit_post']) && $_SESSION['role'] === 'admin') {
 
 </div>
 
-<script src="blog.js"></script>
+<script src="Script/blog.js"></script>
 </body>
 </html>
