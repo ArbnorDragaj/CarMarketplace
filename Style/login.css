@@ -2,163 +2,204 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(241, 196, 15, 0.18),
-      transparent 35%
-    ),
-    linear-gradient(135deg, #020c1b, #0a192f, #111827);
   display: flex;
   justify-content: center;
   align-items: center;
+  background: #050b14;
+  position: relative;
+  overflow: hidden;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("../img/car\ 4.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(0.7px);
+  transform: scale(1.015);
+  z-index: -3;
+}
+
+/* Overlay që makina të shihet, por forma të lexohet */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0.22),
+    rgba(0, 0, 0, 0.65)
+  );
+  z-index: -2;
+}
+
+/* Forma në mes */
 .login-box {
-  width: 390px;
-  background: rgba(15, 30, 51, 0.95);
-  padding: 42px 38px;
+  width: 370px;
+  padding: 34px 32px;
   border-radius: 18px;
-  border: 1px solid rgba(241, 196, 15, 0.25);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
   text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  background: rgba(5, 12, 22, 0.68);
+  border: 1px solid rgba(241, 196, 15, 0.38);
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.login-icon {
-  width: 70px;
-  height: 70px;
-  background: #f1c40f;
-  color: #020c1b;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto 18px;
-  font-size: 30px;
-  box-shadow: 0 0 25px rgba(241, 196, 15, 0.35);
+/* Vijë e verdhë shumë e lehtë sipër */
+.login-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 35px;
+  right: 35px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #f1c40f, transparent);
 }
 
 .login-box h2 {
-  color: #ffffff;
-  font-size: 30px;
-  margin-bottom: 8px;
-}
-
-.login-box p {
-  color: #9ca3af;
-  font-size: 14px;
-  margin-bottom: 28px;
+  color: #f1c40f;
+  font-size: 31px;
+  font-weight: 800;
+  margin-bottom: 26px;
+  letter-spacing: 0.4px;
 }
 
 .error {
-  background: rgba(255, 77, 77, 0.12);
-  color: #ff6b6b;
-  border: 1px solid rgba(255, 77, 77, 0.35);
+  background: rgba(255, 0, 0, 0.13);
+  color: #ff8080;
+  border: 1px solid rgba(255, 0, 0, 0.28);
   padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 18px;
+  border-radius: 10px;
+  margin-bottom: 17px;
   font-size: 14px;
 }
 
 .input-box {
-  position: relative;
   width: 100%;
-  margin-bottom: 18px;
-}
-
-.input-box i.left-icon {
-  position: absolute;
-  left: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #f1c40f;
-  font-size: 16px;
+  position: relative;
+  margin-bottom: 17px;
 }
 
 .input-box input {
   width: 100%;
-  height: 48px;
-  padding: 0 45px 0 45px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  background: #081426;
-  color: white;
+  height: 49px;
+  padding: 0 46px 0 17px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   outline: none;
-  font-size: 15px;
-  transition: 0.3s ease;
+
+  background: rgba(3, 10, 20, 0.78);
+  color: #ffffff;
+  font-size: 15.5px;
+
+  transition: 0.25s ease;
 }
 
 .input-box input::placeholder {
-  color: #7c8798;
+  color: #b7c0cc;
+}
+
+.input-box input:hover {
+  border-color: rgba(241, 196, 15, 0.42);
 }
 
 .input-box input:focus {
   border-color: #f1c40f;
-  box-shadow: 0 0 0 4px rgba(241, 196, 15, 0.12);
-  background: #0b1b30;
+  background: rgba(4, 13, 26, 0.92);
+  box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.16);
 }
 
-.toggle {
+.toggle,
+.eye-icon {
   position: absolute;
-  right: 15px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9ca3af;
-  cursor: pointer;
+  color: #c8d0dc;
   font-size: 16px;
-  transition: 0.3s ease;
+  cursor: pointer;
+  transition: 0.25s ease;
 }
 
-.toggle:hover {
+.toggle:hover,
+.eye-icon:hover {
   color: #f1c40f;
 }
 
 .login-btn {
   width: 100%;
-  height: 48px;
+  height: 49px;
+  margin-top: 5px;
   border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #f1c40f, #d4ac0d);
-  color: #020c1b;
+  border-radius: 13px;
+
+  background: linear-gradient(135deg, #f1c40f, #d4a50b);
+  color: #071221;
+
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 800;
   cursor: pointer;
-  transition: 0.3s ease;
-  margin-top: 6px;
+
+  box-shadow: 0 12px 26px rgba(241, 196, 15, 0.22);
+  transition: 0.25s ease;
 }
 
 .login-btn:hover {
+  background: linear-gradient(135deg, #ffd93b, #d4a50b);
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(241, 196, 15, 0.25);
+  box-shadow: 0 16px 34px rgba(241, 196, 15, 0.3);
 }
 
 .login-btn:active {
   transform: translateY(0);
 }
 
-.login-footer {
-  margin-top: 22px;
-  color: #8a94a6;
-  font-size: 13px;
-}
-
-.login-footer span {
-  color: #f1c40f;
-  font-weight: bold;
+/* Autofill fix */
+.input-box input:-webkit-autofill,
+.input-box input:-webkit-autofill:hover,
+.input-box input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(4, 13, 26, 0.92) inset !important;
+  border-radius: 13px;
 }
 
 @media (max-width: 480px) {
+  body {
+    padding: 18px;
+  }
+
   .login-box {
-    width: 90%;
-    padding: 35px 25px;
+    width: 100%;
+    padding: 31px 24px;
   }
 
   .login-box h2 {
-    font-size: 26px;
+    font-size: 27px;
+  }
+
+  .input-box input,
+  .login-btn {
+    height: 47px;
   }
 }

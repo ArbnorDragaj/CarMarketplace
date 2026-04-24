@@ -43,13 +43,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="error"><?php echo $error; ?></div>
         <?php endif; ?>
 
-        <form method="post">
+        <form method="post" autocomplete="off">
             <div class="input-box">
-                <input type="text" name="username" placeholder="Username" required>
+                <input type="text" name="username" placeholder="Username" autocomplete="off" required>
             </div>
 
             <div class="input-box">
-                <input type="password" id="password" name="password" placeholder="Password" required>
+                <input type="password" id="password" name="password" placeholder="Password" autocomplete="off" required>
                 <i class="fa-solid fa-eye toggle" id="eye" onclick="togglePassword()"></i>
             </div>
 
