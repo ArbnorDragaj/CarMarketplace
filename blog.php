@@ -135,3 +135,99 @@ $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
         </form>
     </div>
 </div>
+
+<?php else: ?>
+
+<div class="app">
+
+    <nav class="navbar">
+        <h2>Blog Spot</h2>
+
+        
+
+        <div class="user-area">
+            <span><?php echo htmlspecialchars($_SESSION['user']); ?></span>
+            <a href="?logout=true" class="logout">Logout</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div>
+            <h1>Welcome back, <?php echo htmlspecialchars($_SESSION['user']); ?> </h1>
+            <p>Discover stories, ideas and inspiration.</p>
+        </div>
+
+        <?php if ($_SESSION['role'] === 'admin'): ?>
+            <button class="open-modal" onclick="openModal()">+ Create New Post</button>
+        <?php endif; ?>
+    </section>
+
+    <main class="layout">
+
+        <section class="content">
+            <h2 class="section-title">Latest Posts</h2>
+
+            <div class="grid">
+                <?php foreach (array_reverse($posts, true) as $id => $post): ?>
+                    <div class="card">
+
+                        <?php if (!empty($post['image'])): ?>
+                            <img src="<?php echo htmlspecialchars($post['image']); ?>" class="post-img">
+                        <?php else: ?>
+                            <div class="no-img">Blog Spot</div>
+                        <?php endif; ?>
+
+                        <div class="card-body">
+
+                            <?php if (isset($_GET['edit']) && $_GET['edit'] == $id): ?>
+
+                                <form method="POST" enctype="multipart/form-data" class="edit-form">
+                                    <input type="hidden" name="id" value="<?php echo $id; ?>">
+
+                                    <input type="text" name="title" value="<?php echo htmlspecialchars($post['title']); ?>" required>
+
+                                    <textarea name="content" required><?php echo htmlspecialchars($post['content']); ?></textarea>
+
+                                    <select name="category">
+                                        <?php foreach ($categories as $cat): ?>
+                                            <option value="<?php echo $cat; ?>" <?php echo (($post['category'] ?? '') === $cat) ? 'selected' : ''; ?>>
+                                                <?php echo $cat; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+
+                                    <input type="file" name="image">
+                                    <button name="edit_post">Save Changes</button>
+                                </form>
+
+                            <?php else: ?>
+
+                                <span class="date"><?php echo htmlspecialchars($post['date']); ?></span>
+
+                                <h3><?php echo htmlspecialchars($post['title']); ?></h3>
+
+                                <p><?php echo htmlspecialchars($post['content']); ?></p>
+
+                                <div class="card-footer">
+                                    <div class="author">
+                                        <span class="avatar">👤</span>
+                                        <?php echo htmlspecialchars($post['author'] ?? 'admin'); ?>
+                                    </div>
+
+                                    <span class="tag"><?php echo htmlspecialchars($post['category'] ?? 'Life'); ?></span>
+                                </div>
+
+                                <?php if ($_SESSION['role'] === 'admin'): ?>
+                                    <div class="actions">
+                                        <a href="?edit=<?php echo $id; ?>" class="edit">Edit</a>
+                                        <a href="?delete=<?php echo $id; ?>" class="delete" onclick="return confirm('A je i sigurt?')">Delete</a>
+                                    </div>
+                                <?php endif; ?>
+
+                            <?php endif; ?>
+
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
