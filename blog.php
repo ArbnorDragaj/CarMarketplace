@@ -34,7 +34,7 @@ if (isset($_GET['logout'])) {
 function uploadImage() {
     if (empty($_FILES['image']['name'])) return "";
 
-    $targetDir = "images/";
+    $targetDir = "uploads/";
     if (!is_dir($targetDir)) mkdir($targetDir);
 
     $fileName = time() . "_" . basename($_FILES["image"]["name"]);
