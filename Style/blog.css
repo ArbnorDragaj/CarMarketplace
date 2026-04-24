@@ -49,3 +49,47 @@ button {
   background: #3b82f6;
   color: white;
 }
+
+.form-box {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.card {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.post-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+.edit { color: #38bdf8; margin-right: 10px; }
+.delete { color: #f87171; }
+
+@media(max-width: 600px) {
+  .top-bar {
+    flex-direction: column;
+  }
+}
