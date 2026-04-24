@@ -1,0 +1,95 @@
+body {
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: 'Segoe UI', sans-serif;
+
+  background-image: url("../images/videoframe_0.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.login-box {
+  max-width: 350px;
+  margin: 100px auto;
+  background: #1e293b;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #334155;
+  color: white;
+}
+
+button {
+  margin-top: 15px;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background: #3b82f6;
+  color: white;
+}
+
+.form-box {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.card {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.post-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+.edit { color: #38bdf8; margin-right: 10px; }
+.delete { color: #f87171; }
+
+@media(max-width: 600px) {
+  .top-bar {
+    flex-direction: column;
+  }
+}

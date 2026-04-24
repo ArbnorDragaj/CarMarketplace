@@ -3,14 +3,14 @@ session_start();
 
 $users = [
     "admin" => ["password" => "1234", "role" => "admin"],
-    "arbnor"  => ["password" => "1234", "role" => "user"]
+    "arbnor" => ["password" => "1234", "role" => "user"]
 ];
 
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = $_POST['username'] ?? "";
+    $password = $_POST['password'] ?? "";
 
     if (isset($users[$username]) && $users[$username]['password'] === $password) {
         $_SESSION['user'] = $username;
@@ -23,55 +23,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
 <!DOCTYPE html>
-<html >
+<html lang="sq">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
 
-<link href="Style/login.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="Style/login.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
-
 <body>
 
     <div class="login-box">
         <h2>Login</h2>
 
-   <?php if ($error): ?>
-        <div class="error"><?php echo $error; ?></div>
-    <?php endif; ?>
+        <?php if ($error): ?>
+            <div class="error"><?php echo $error; ?></div>
+        <?php endif; ?>
 
-        <form method="post">
+        <form method="post" autocomplete="off">
             <div class="input-box">
-                <input type="text" name="username" placeholder="Username">
+                <input type="text" name="username" placeholder="Username" autocomplete="off" required>
             </div>
 
-         <div class="input-box">
-<div class="input-box">
-    <input type="password" id="password" name="password" placeholder="Password" required>
-    <i class="fa-solid fa-eye toggle" id="eye" onclick="togglePassword()"></i>
-</div>
+            <div class="input-box">
+                <input type="password" id="password" name="password" placeholder="Password" autocomplete="off" required>
+                <i class="fa-solid fa-eye toggle" id="eye" onclick="togglePassword()"></i>
+            </div>
 
-            <button class="login-btn">Login</button>
+            <button type="submit" class="login-btn">Login</button>
         </form>
     </div>
-<script>
-function togglePassword() {
-    var pass = document.getElementById("password");
-    var eye = document.getElementById("eye");
 
-    if (pass.type === "password") {
-        pass.type = "text";
-        eye.classList.remove("fa-eye");
-        eye.classList.add("fa-eye-slash");
-    } else {
-        pass.type = "password";
-        eye.classList.remove("fa-eye-slash");
-        eye.classList.add("fa-eye");
-    }
-}
-</script>
+    <script>
+        function togglePassword() {
+            var pass = document.getElementById("password");
+            var eye = document.getElementById("eye");
+
+            if (pass.type === "password") {
+                pass.type = "text";
+                eye.classList.remove("fa-eye");
+                eye.classList.add("fa-eye-slash");
+            } else {
+                pass.type = "password";
+                eye.classList.remove("fa-eye-slash");
+                eye.classList.add("fa-eye");
+            }
+        }
+    </script>
+
 </body>
 </html>

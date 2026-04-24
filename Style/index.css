@@ -1,0 +1,48 @@
+body {  margin: 0; font-family: Arial, sans-serif;
+        background-image: url('../img/car 4.jpg'); 
+        background-size: cover;        
+        background-position: center;  
+        background-repeat: no-repeat;  
+        background-attachment: fixed;
+        
+     }
+
+
+p {
+    color: white;
+    font-size: 50px;
+    line-height: 1.6;
+    margin-top: 270px;
+     margin-left: 50px;
+}
+strong {
+    color: #e70909;
+}
+.navbar ul li .blog {
+    color: #e70909;
+}
+.btn {
+    background-color: transparent;
+    border: 3px solid #e70909;
+
+
+    display: inline-block;
+    padding: 15px 50px;
+    
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    margin-left: 50px;
+}
+.btn:hover {
+    background-color: #e70909;
+    color: white;
+    transition: 1s;
+}
+.btn a {
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+}
