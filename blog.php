@@ -118,6 +118,9 @@ $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
     <meta charset="UTF-8">
     <title>Blog Spot</title>
     <link rel="stylesheet" href="style/blog.css">
+    <link rel="stylesheet" href="Style/style.css">
+
+    <?php include "header.php"; ?>
 </head>
 <body>
 
@@ -294,7 +297,9 @@ $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
 </div>
 <?php endif; ?>
 
-<script src="script/blog.js"></script>
+<script src="Script/blog.js"></script>
+ <?php include "footer.php"; ?>
+
 
 <?php endif; ?>
 
