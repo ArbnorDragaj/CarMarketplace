@@ -1,52 +1,76 @@
 <?php
 session_start();
-if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
-    exit();
-}
 
 $error = "";
 $success = "";
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $message = $_POST['message'];
 
-    if(!preg_match("/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i",$email)){
+    $name = htmlspecialchars(trim($_POST['name']));
+    $email = htmlspecialchars(trim($_POST['email']));
+    $phone = htmlspecialchars(trim($_POST['phone']));
+    $message = htmlspecialchars(trim($_POST['message']));
+
+    
+    // Validimi
+    if(empty($name) || empty($email) || empty($phone) || empty($message)){
+        $error = "Ju lutem plotësoni të gjitha fushat!";
+    }
+    elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
         $error = "Email i pavlefshëm!";
-    } elseif(!preg_match("/^\+355\d{8,9}$/",$phone)){
-        $error = "Numër telefoni i pavlefshëm!";
-    } else {
+    } 
+    elseif(!preg_match("/^\+355\d{8,9}$/",$phone)){
+        $error = "Numër telefoni i pavlefshëm! (Shembull: +355XXXXXXXXX)";
+    } 
+    else {
         $success = "Mesazhi u dërgua me sukses!";
+        
+        // Pas suksesit i zbrazim fushat
+        $name = $email = $phone = $message = "";
     }
 }
 ?>
-<section class="contact-form">
-<h2>Na Kontaktoni</h2>
-<?php if($error) echo "<p style='color:red;'>$error</p>"; ?>
-<?php if($success) echo "<p style='color:green;'>$success</p>"; ?>
-<form method="POST" action="">
-    <input type="text" name="name" placeholder="Emri juaj" value="<?= isset($_SESSION['user']) ? $_SESSION['user'] : '' ?>">
-    <input type="email" name="email" placeholder="Email">
-    <input type="text" name="phone" placeholder="Numri i telefonit">
-    <textarea name="message" placeholder="Mesazhi juaj"></textarea>
-    <button type="submit">Dërgo</button>
-</form>
-</section>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sq">
 <head>
-
-<link rel="stylesheet" href="contact.css">
-    
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Kontakti - CarMarketPlace</title>
+    
+    <link rel="stylesheet" href="Style/contact.css">
 </head>
 <body>
-    
+
+<section class="contact-form">
+    <h2>Na Kontaktoni</h2>
+
+    <?php if($error): ?>
+        <p class="error"><?= $error ?></p>
+    <?php endif; ?>
+
+    <?php if($success): ?>
+        <p class="success"><?= $success ?></p>
+    <?php endif; ?>
+
+    <form method="POST" id="contactForm">
+
+        <input type="text" name="name" placeholder="Emri juaj"
+        value="<?= isset($name) ? $name : '' ?>">
+
+        <input type="email" name="email" placeholder="Email"
+        value="<?= isset($email) ? $email : '' ?>">
+
+        <input type="text" name="phone" placeholder="Numri i telefonit (+355...)"
+        value="<?= isset($phone) ? $phone : '' ?>">
+
+        <textarea name="message" placeholder="Mesazhi juaj"><?= isset($message) ? $message : '' ?></textarea>
+
+        <button type="submit">Dërgo</button>
+    </form>
+</section>
+
+<script src="contact.js"></script>
+
 </body>
 </html>
