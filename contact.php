@@ -30,3 +30,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     }
 }
 ?>
+
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakti - CarMarketPlace</title>
+    
+    <link rel="stylesheet" href="Style/contact.css">
+</head>
+<body>
+
+<section class="contact-form">
+    <h2>Na Kontaktoni</h2>
