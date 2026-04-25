@@ -45,3 +45,24 @@ body {
     border-color: #4facfe;
     box-shadow: 0 0 5px rgba(79,172,254,0.4);
 }
+
+.contact-form textarea {
+    resize: none;
+    height: 110px;
+}
+
+.contact-form button {
+    width: 100%;
+    padding: 12px;
+    background: #4facfe;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.contact-form button:hover {
+    background: #00c6ff;
+}
