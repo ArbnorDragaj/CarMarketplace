@@ -44,3 +44,33 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 <section class="contact-form">
     <h2>Na Kontaktoni</h2>
+
+    <?php if($error): ?>
+        <p class="error"><?= $error ?></p>
+    <?php endif; ?>
+
+    <?php if($success): ?>
+        <p class="success"><?= $success ?></p>
+    <?php endif; ?>
+
+    <form method="POST" id="contactForm">
+
+        <input type="text" name="name" placeholder="Emri juaj"
+        value="<?= isset($name) ? $name : '' ?>">
+
+        <input type="email" name="email" placeholder="Email"
+        value="<?= isset($email) ? $email : '' ?>">
+
+        <input type="text" name="phone" placeholder="Numri i telefonit (+355...)"
+        value="<?= isset($phone) ? $phone : '' ?>">
+
+        <textarea name="message" placeholder="Mesazhi juaj"><?= isset($message) ? $message : '' ?></textarea>
+
+        <button type="submit">Dërgo</button>
+    </form>
+</section>
+
+<script src="contact.js"></script>
+
+</body>
+</html>
