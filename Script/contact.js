@@ -18,9 +18,9 @@ document.getElementById("contactForm").addEventListener("submit", function(e){
         return;
     }
 
-    let phonePattern = /^\+355\d{8,9}$/;
+    let phonePattern = /^\+383\d{8,9}$/;
     if(!phone.match(phonePattern)){
-        alert("Numër telefoni i pavlefshëm! (+355...)");
+        alert("Numër telefoni i pavlefshëm! (+383...)");
         e.preventDefault();
         return;
     }
