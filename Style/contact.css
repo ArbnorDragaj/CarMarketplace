@@ -11,3 +11,19 @@ body {
     background-position: center;
     background-repeat: no-repeat;
 }
+
+.contact-form {
+    width: 420px;
+    margin: 80px auto;
+    padding: 35px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    text-align: center;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+.contact-form h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
