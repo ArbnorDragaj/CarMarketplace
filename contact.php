@@ -61,7 +61,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         <input type="email" name="email" placeholder="Email"
         value="<?= isset($email) ? $email : '' ?>">
 
-        <input type="text" name="phone" placeholder="Numri i telefonit (+355...)"
+        <input type="text" name="phone" placeholder="Numri i telefonit (+383...)"
         value="<?= isset($phone) ? $phone : '' ?>">
 
         <textarea name="message" placeholder="Mesazhi juaj"><?= isset($message) ? $message : '' ?></textarea>
@@ -74,3 +74,5 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 </body>
 </html>
+
+       
