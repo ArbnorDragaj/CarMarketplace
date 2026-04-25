@@ -19,8 +19,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
         $error = "Email i pavlefshëm!";
     } 
-    elseif(!preg_match("/^\+355\d{8,9}$/",$phone)){
-        $error = "Numër telefoni i pavlefshëm! (Shembull: +355XXXXXXXXX)";
+    elseif(!preg_match("/^\+383\d{8,9}$/",$phone)){
+        $error = "Numër telefoni i pavlefshëm! (Shembull: +383XXXXXXXXX)";
     } 
     else {
         $success = "Mesazhi u dërgua me sukses!";
