@@ -1,3 +1,9 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
 <header class="main-header">
     <div class="container">
         <div class="logo">
@@ -10,6 +16,12 @@
                 <li><a href="kontakti.php">Kontakti</a></li>
                 <li><a href="login.php">LogIN</a></li>
                 <li><a href="blog.php" class="blog">Blog</a></li>
+
+                     <?php if (isset($_SESSION['user'])): ?>
+                    <li class="user-info">
+                        👤 <?php echo htmlspecialchars($_SESSION['user']); ?>
+                    </li>
+                <?php endif; ?>
             </ul>
         </nav>
     </div>

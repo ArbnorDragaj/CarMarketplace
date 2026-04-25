@@ -1,1 +1,34 @@
-[]
+[
+    {
+        "title": "Shpejt\u00ebsia q\u00eb t\u00eb l\u00eb pa frym\u00eb!",
+        "content": "Adrenalina fillon aty ku kufijt\u00eb mbarojn\u00eb. Sports car nuk \u00ebsht\u00eb thjesht nj\u00eb makin\u00eb \u2013 \u00ebsht\u00eb p\u00ebrjetim. Dizajn agresiv, performanc\u00eb ekstreme dhe ndjesia e kontrollit absolut n\u00eb \u00e7do kthes\u00eb.\r\nN\u00ebse e do shpejt\u00ebsin\u00eb, kjo \u00ebsht\u00eb zgjedhja jote.",
+        "category": "Sports Car",
+        "image": "uploads\/1777116444_2023-Chevrolet-Corvette-Z06-credit-chevrolet.webp",
+        "date": "25 Apr 2026",
+        "author": "admin"
+    },
+    {
+        "title": "Eleganc\u00eb n\u00eb \u00e7do detaj",
+        "content": "Kur luksi dhe teknologjia bashkohen, lind di\u00e7ka e jasht\u00ebzakonshme. Interior premium, rehati maksimale dhe stil q\u00eb t\u00eb dallon kudo.\r\nLuxury car nuk \u00ebsht\u00eb vet\u00ebm transport \u2013 \u00ebsht\u00eb status dhe p\u00ebrvoj\u00eb.",
+        "category": "Luxury",
+        "image": "",
+        "date": "25 Apr 2026",
+        "author": "admin"
+    },
+    {
+        "title": "Fuqi p\u00ebr \u00e7do rrug\u00eb",
+        "content": "Qoft\u00eb n\u00eb qytet apo n\u00eb terrene t\u00eb v\u00ebshtira, SUV \u00ebsht\u00eb gjithmon\u00eb gati. Hap\u00ebsir\u00eb, siguri dhe performanc\u00eb n\u00eb \u00e7do situat\u00eb.\r\nMakina perfekte p\u00ebr aventur\u00eb dhe familje.",
+        "category": "SUV",
+        "image": "uploads\/1777116563_Lamborghini-Urus-2.webp",
+        "date": "25 Apr 2026",
+        "author": "admin"
+    },
+    {
+        "title": "Bukuri q\u00eb nuk plaket kurr\u00eb",
+        "content": "Klasiket mbeten gjithmon\u00eb n\u00eb mod\u00eb. Me linja unike dhe histori pas \u00e7do modeli, classic cars jan\u00eb thesar p\u00ebr \u00e7do dashamir\u00ebs t\u00eb makinave.\r\nNj\u00eb ikon\u00eb e s\u00eb kaluar\u00ebs q\u00eb vazhdon t\u00eb frym\u00ebzoj\u00eb.",
+        "category": "Classic",
+        "image": "uploads\/1777116593_bmw-e30-m3-by-redux.jpg",
+        "date": "25 Apr 2026",
+        "author": "admin"
+    }
+]
