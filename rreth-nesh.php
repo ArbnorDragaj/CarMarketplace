@@ -1,6 +1,6 @@
 <?php 
     $site_name = "CarMarketPlace";
-    include 'header.php'; // Përdor header-in që ke te fotoja
+    include 'Includes/header.php'; // Përdor header-in që ke te fotoja
 ?>
 <!DOCTYPE html>
 <html lang="sq">
