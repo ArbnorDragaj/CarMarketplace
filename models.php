@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'carCL.php';
+require 'classes/carCL.php';
 
 $site_name = "CarMarketPlace";
 //set favorite brand
@@ -44,8 +44,16 @@ $cars = [
 
 ?>
 
-<link rel="stylesheet" href="Style/style.css">
-<link rel="stylesheet" href="Style/models.css">
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Models</title>
+
+    <link rel="stylesheet" href="Style/style.css">
+    <link rel="stylesheet" href="Style/models.css">
+</head>
+<body>
 
 <?php include 'Includes/header.php'; ?>
 
@@ -127,3 +135,6 @@ $cars = [
 </div>
 
 <?php include 'Includes/footer.php'; ?>
+
+</body>
+</html>
