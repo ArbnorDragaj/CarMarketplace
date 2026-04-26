@@ -1,5 +1,12 @@
 <?php
-session_start();
+$site_name = "CarMarketplace";
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$name = $_COOKIE['contact_name'] ?? "";
+$email = $_COOKIE['contact_email'] ?? "";
 
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
@@ -8,30 +15,29 @@ if (!isset($_SESSION['user'])) {
 
 $error = "";
 $success = "";
+$error = "";
 
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
+if (isset($_POST['send_message'])) {
+    $name = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $subject = trim($_POST['subject']);
+    $message = trim($_POST['message']);
 
-    $name = htmlspecialchars(trim($_POST['name']));
-    $email = htmlspecialchars(trim($_POST['email']));
-    $phone = htmlspecialchars(trim($_POST['phone']));
-    $message = htmlspecialchars(trim($_POST['message']));
+    $nameRegex = "/^[a-zA-ZëËçÇ\s]{2,50}$/";
+    $emailRegex = "/^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,}$/";
 
-    
-    // Validimi
-    if(empty($name) || empty($email) || empty($phone) || empty($message)){
-        $error = "Ju lutem plotësoni të gjitha fushat!";
-    }
-    elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-        $error = "Email i pavlefshëm!";
-    } 
-    elseif(!preg_match("/^\+355\d{8,9}$/",$phone)){
-        $error = "Numër telefoni i pavlefshëm! (Shembull: +355XXXXXXXXX)";
-    } 
-    else {
+    if (!preg_match($nameRegex, $name)) {
+        $error = "Emri nuk është valid!";
+    } elseif (!preg_match($emailRegex, $email)) {
+        $error = "Email-i nuk është valid!";
+    } elseif (strlen($subject) < 3) {
+        $error = "Subject duhet të ketë së paku 3 karaktere!";
+    } elseif (strlen($message) < 10) {
+        $error = "Mesazhi duhet të ketë së paku 10 karaktere!";
+    } else {
+        setcookie("contact_name", $name, time() + (86400 * 30), "/");
+        setcookie("contact_email", $email, time() + (86400 * 30), "/");
         $success = "Mesazhi u dërgua me sukses!";
-        
-        // Pas suksesit i zbrazim fushat
-        $name = $email = $phone = $message = "";
     }
 }
 ?>
@@ -50,36 +56,97 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 </head>
 <body>
 
-<section class="contact-form">
-    <h2>Na Kontaktoni</h2>
+require "Includes/header.php";
+?>
 
-    <?php if($error): ?>
-        <p class="error"><?= $error ?></p>
-    <?php endif; ?>
+<link rel="stylesheet" href="style/contact.css">
+<link rel="stylesheet" href="style/style.css">
 
-    <?php if($success): ?>
-        <p class="success"><?= $success ?></p>
-    <?php endif; ?>
-
-    <form method="POST" id="contactForm">
-
-        <input type="text" name="name" placeholder="Emri juaj"
-        value="<?= isset($name) ? $name : '' ?>">
-
-        <input type="email" name="email" placeholder="Email"
-        value="<?= isset($email) ? $email : '' ?>">
-
-        <input type="text" name="phone" placeholder="Numri i telefonit (+355...)"
-        value="<?= isset($phone) ? $phone : '' ?>">
-
-        <textarea name="message" placeholder="Mesazhi juaj"><?= isset($message) ? $message : '' ?></textarea>
-
-        <button type="submit">Dërgo</button>
-    </form>
+<section class="contact-hero">
+    <div class="contact-hero-text">
+        <span>WE'D LOVE TO HEAR FROM YOU</span>
+        <h1>Contact Us</h1>
+        <p>Have a question or need help? Fill out the form and our team will get back to you as soon as possible.</p>
+    </div>
 </section>
 
+<section class="contact-section">
+    <div class="contact-form-box">
+        <h2>Send Us a Message</h2>
+
+        <?php if ($error): ?>
+            <div class="alert error"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
+
+        <?php if ($success): ?>
+            <div class="alert success"><?php echo htmlspecialchars($success); ?></div>
+        <?php endif; ?>
+
+        <form method="POST">
+            <label>Full Name</label>
+            <input type="text" name="name" placeholder="Your name"
+                   value="<?php echo htmlspecialchars($name); ?>" required>
+
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="Your email"
+                   value="<?php echo htmlspecialchars($email); ?>" required>
+
+            <label>Subject</label>
+            <input type="text" name="subject" placeholder="How can we help?" required>
+
+            <label>Message</label>
+            <textarea name="message" placeholder="Write your message here..." required></textarea>
+
+            <button type="submit" name="send_message">Send Message</button>
+        </form>
+    </div>
+
+    <div class="contact-info-box">
+        <h2>Get in Touch</h2>
+
+        <div class="info-item">
+            <div class="icon">📍</div>
+            <div>
+                <h3>Address</h3>
+                <p>Rr. Skënderbeu, Prishtinë, Kosova</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="icon">📞</div>
+            <div>
+                <h3>Phone</h3>
+                <p>+383 44 123 456</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="icon">✉️</div>
+            <div>
+                <h3>Email</h3>
+                <p>info@carmarketplace.com</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="icon">⏰</div>
+            <div>
+                <h3>Working Hours</h3>
+                <p>Mon - Fri: 09:00 - 18:00</p>
+                <p>Sat: 10:00 - 15:00</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-cta">
+    <div>
+        <h2>Looking for your dream car?</h2>
+        <p>Check out our latest listings.</p>
+    </div>
+    <a href="sherbimet.php">Browse Cars</a>
+</section>
 <script src="contact.js"></script>
 <?php include "Includes/footer.php"; ?>
 
-</body>
-</html>
+<?php require "Includes/footer.php"; ?>
