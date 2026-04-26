@@ -120,7 +120,7 @@ $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
     <link rel="stylesheet" href="Style/blog.css">
     <link rel="stylesheet" href="Style/style.css">
 
-    <?php include "header.php"; ?>
+    <?php include "Includes/header.php"; ?>
 </head>
 <body>
 
@@ -295,7 +295,7 @@ $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
 <?php endif; ?>
 
 <script src="Script/blog.js"></script>
- <?php include "footer.php"; ?>
+ <?php include "Includes/footer.php"; ?>
 
 
 <?php endif; ?>

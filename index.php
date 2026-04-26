@@ -23,7 +23,7 @@ if (!isset($_SESSION['user'])) {
 
 </head>
 <body>
-    <?php include 'header.php'; ?>
+    <?php include 'Includes/header.php'; ?>
 
 <!-- <header class="main-header">
     <div class="container">
@@ -46,12 +46,12 @@ if (!isset($_SESSION['user'])) {
 <br>
 Quality, Guarantee, <strong>Stability</strong> with Us
 </p>
-<button class="btn"><a href="sherbimet.php">Eksploro</a></button>
+<button class="btn"><a href="models.php">Eksploro</a></button>
 <br>
 <br>
 <br>
 <br>
 
-    <?php include 'footer.php'; ?>
+    <?php include 'Includes/footer.php'; ?>
 
 </body>
