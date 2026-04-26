@@ -79,3 +79,51 @@ require "Includes/header.php";
             <button type="submit" name="send_message">Send Message</button>
         </form>
     </div>
+
+    <div class="contact-info-box">
+        <h2>Get in Touch</h2>
+
+        <div class="info-item">
+            <div class="icon">📍</div>
+            <div>
+                <h3>Address</h3>
+                <p>Rr. Skënderbeu, Prishtinë, Kosova</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="icon">📞</div>
+            <div>
+                <h3>Phone</h3>
+                <p>+383 44 123 456</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="icon">✉️</div>
+            <div>
+                <h3>Email</h3>
+                <p>info@carmarketplace.com</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="icon">⏰</div>
+            <div>
+                <h3>Working Hours</h3>
+                <p>Mon - Fri: 09:00 - 18:00</p>
+                <p>Sat: 10:00 - 15:00</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-cta">
+    <div>
+        <h2>Looking for your dream car?</h2>
+        <p>Check out our latest listings.</p>
+    </div>
+    <a href="sherbimet.php">Browse Cars</a>
+</section>
+
+<?php require "Includes/footer.php"; ?>
