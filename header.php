@@ -24,6 +24,13 @@ if (!isset($site_name)) {
                 <li><a href="sherbimet.php">Shërbimet</a></li>
                 <li><a href="kontakti.php">Kontakti</a></li>
                 <li><a href="blog.php" class="blog-link">Blog</a></li>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+    <li>
+        <a href="admin.php" class="<?php echo ($currentPage == 'admin.php') ? 'active' : ''; ?>">
+            Admin
+        </a>
+    </li>
+<?php endif; ?>
             </ul>
         </nav>
 
@@ -36,6 +43,7 @@ if (!isset($site_name)) {
             <?php else: ?>
                 <a href="login.php" class="login-btn">Kyçu</a>
             <?php endif; ?>
+
         </div>
 
     </div>
