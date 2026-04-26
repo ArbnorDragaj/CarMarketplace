@@ -37,3 +37,18 @@ if (isset($_POST['send_message'])) {
 
 require "Includes/header.php";
 ?>
+
+<link rel="stylesheet" href="style/contact.css">
+<link rel="stylesheet" href="style/style.css">
+
+<section class="contact-hero">
+    <div class="contact-hero-text">
+        <span>WE'D LOVE TO HEAR FROM YOU</span>
+        <h1>Contact Us</h1>
+        <p>Have a question or need help? Fill out the form and our team will get back to you as soon as possible.</p>
+    </div>
+</section>
+
+<section class="contact-section">
+    <div class="contact-form-box">
+        <h2>Send Us a Message</h2>
