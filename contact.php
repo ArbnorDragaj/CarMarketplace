@@ -52,3 +52,30 @@ require "Includes/header.php";
 <section class="contact-section">
     <div class="contact-form-box">
         <h2>Send Us a Message</h2>
+
+        <?php if ($error): ?>
+            <div class="alert error"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
+
+        <?php if ($success): ?>
+            <div class="alert success"><?php echo htmlspecialchars($success); ?></div>
+        <?php endif; ?>
+
+        <form method="POST">
+            <label>Full Name</label>
+            <input type="text" name="name" placeholder="Your name"
+                   value="<?php echo htmlspecialchars($name); ?>" required>
+
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="Your email"
+                   value="<?php echo htmlspecialchars($email); ?>" required>
+
+            <label>Subject</label>
+            <input type="text" name="subject" placeholder="How can we help?" required>
+
+            <label>Message</label>
+            <textarea name="message" placeholder="Write your message here..." required></textarea>
+
+            <button type="submit" name="send_message">Send Message</button>
+        </form>
+    </div>
