@@ -44,78 +44,86 @@ $cars = [
 
 ?>
 
-<?php include 'header.php'; ?>
-
+<link rel="stylesheet" href="Style/style.css">
 <link rel="stylesheet" href="Style/models.css">
+
+<?php include 'Includes/header.php'; ?>
+
+
 
 <div class="models-page">
     <h1 class="models-title">Our Cars</h1>
 
-        <div class="favorite-links">
-            <a href="?brand=Audi">Audi</a>
-            <a href="?brand=BMW">BMW</a>
-            <a href="?brand=Mercedes">Mercedes</a>
-            <a href="?brand=Tesla">Tesla</a>
-        </div>
+    <div class="favorite-links">
+        <a href="?brand=Audi">Audi</a>
+        <a href="?brand=BMW">BMW</a>
+        <a href="?brand=Mercedes">Mercedes</a>
+        <a href="?brand=Tesla">Tesla</a>
+    </div>
+
+    <div class="models-layout">
 
         <form method="GET" class="filters-box">
 
-        <select name="brandFilter">
-            <option value="">All Brands</option>
-            <option value="Audi" <?php if ($brandFilter == "Audi") echo "selected"; ?>>Audi</option>
-            <option value="BMW" <?php if ($brandFilter == "BMW") echo "selected"; ?>>BMW</option>
-            <option value="Mercedes" <?php if ($brandFilter == "Mercedes") echo "selected"; ?>>Mercedes</option>
-            <option value="Tesla" <?php if ($brandFilter == "Tesla") echo "selected"; ?>>Tesla</option>
-        </select>
+            <select name="brandFilter">
+                <option value="">All Brands</option>
+                <option value="Audi" <?php if ($brandFilter == "Audi") echo "selected"; ?>>Audi</option>
+                <option value="BMW" <?php if ($brandFilter == "BMW") echo "selected"; ?>>BMW</option>
+                <option value="Mercedes" <?php if ($brandFilter == "Mercedes") echo "selected"; ?>>Mercedes</option>
+                <option value="Tesla" <?php if ($brandFilter == "Tesla") echo "selected"; ?>>Tesla</option>
+            </select>
 
-        <select name="body">
-            <option value="">All Types</option>
-            <option value="Sedan" <?php if ($bodyFilter == "Sedan") echo "selected"; ?>>Sedan</option>
-            <option value="SUV" <?php if ($bodyFilter == "SUV") echo "selected"; ?>>SUV</option>
-            <option value="Sport" <?php if ($bodyFilter == "Sport") echo "selected"; ?>>Sport</option>
-        </select>
+            <select name="body">
+                <option value="">All Types</option>
+                <option value="Sedan" <?php if ($bodyFilter == "Sedan") echo "selected"; ?>>Sedan</option>
+                <option value="SUV" <?php if ($bodyFilter == "SUV") echo "selected"; ?>>SUV</option>
+                <option value="Sport" <?php if ($bodyFilter == "Sport") echo "selected"; ?>>Sport</option>
+            </select>
 
-        <select name="fuel">
-            <option value="">All Fuel</option>
-            <option value="Petrol" <?php if ($fuelFilter == "Petrol") echo "selected"; ?>>Petrol</option>
-            <option value="Diesel" <?php if ($fuelFilter == "Diesel") echo "selected"; ?>>Diesel</option>
-            <option value="Electric" <?php if ($fuelFilter == "Electric") echo "selected"; ?>>Electric</option>
-        </select>
+            <select name="fuel">
+                <option value="">All Fuel</option>
+                <option value="Petrol" <?php if ($fuelFilter == "Petrol") echo "selected"; ?>>Petrol</option>
+                <option value="Diesel" <?php if ($fuelFilter == "Diesel") echo "selected"; ?>>Diesel</option>
+                <option value="Electric" <?php if ($fuelFilter == "Electric") echo "selected"; ?>>Electric</option>
+            </select>
 
-        <button type="submit">Filter</button>
-        <a href="models.php" class="clear-filter">Clear</a>
+            <button type="submit">Filter</button>
+            <a href="models.php" class="clear-filter">Clear</a>
 
-    </form>
+        </form>
 
-    <div class="models-grid">
+        <div class="models-content">
+            <div class="models-grid">
 
-        <?php foreach ($cars as $car):
-        
-            if ($brandFilter && $car->getBrand() != $brandFilter) continue;
-            if ($bodyFilter && $car->getBody() != $bodyFilter) continue;
-            if ($fuelFilter && $car->getFuel() != $fuelFilter) continue;
+                <?php foreach ($cars as $car):
 
-             $isFavorite = ($car->getBrand() == $favorite);
-        ?>
+                    if ($brandFilter && $car->getBrand() != $brandFilter) continue;
+                    if ($bodyFilter && $car->getBody() != $bodyFilter) continue;
+                    if ($fuelFilter && $car->getFuel() != $fuelFilter) continue;
 
-            <div class="model-card <?php echo $isFavorite ? 'favorite-car' : ''; ?>">
-                <img src="<?php echo $car->getImage(); ?>" alt="<?php echo $car->getFullName(); ?>">
+                    $isFavorite = ($car->getBrand() == $favorite);
+                ?>
 
-                <div class="model-info">
-                    <?php if ($isFavorite): ?>
-                        <span class="favorite-label">⭐ Favorite</span>
-                    <?php endif; ?>
+                    <div class="model-card <?php echo $isFavorite ? 'favorite-car' : ''; ?>">
+                        <img src="<?php echo $car->getImage(); ?>" alt="<?php echo $car->getFullName(); ?>">
 
-                    <h3><?php echo $car->getFullName(); ?></h3>
-                    <p><?php echo $car->getYear(); ?> | <?php echo $car->getFuel(); ?> | <?php echo $car->getBody(); ?></p>
-                    <span class="model-price">€<?php echo number_format($car->getPrice()); ?></span>
-                </div>
+                        <div class="model-info">
+                            <?php if ($isFavorite): ?>
+                                <span class="favorite-label">⭐ Favorite</span>
+                            <?php endif; ?>
+
+                            <h3><?php echo $car->getFullName(); ?></h3>
+                            <p><?php echo $car->getYear(); ?> | <?php echo $car->getFuel(); ?> | <?php echo $car->getBody(); ?></p>
+                            <span class="model-price">€<?php echo number_format($car->getPrice()); ?></span>
+                        </div>
+                    </div>
+
+                <?php endforeach; ?>
+
             </div>
-
-
-        <?php endforeach; ?>
+        </div>
 
     </div>
 </div>
 
-<?php include 'footer.php'; ?>
+<?php include 'Includes/footer.php'; ?>
