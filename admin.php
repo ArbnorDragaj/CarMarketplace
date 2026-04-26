@@ -184,7 +184,7 @@ $inactiveCars = $totalCars - $activeCars;
 </head>
 <body>
 
-<?php include 'header.php'; ?>
+<?php include 'Includes/header.php'; ?>
 
 <section class="admin-cars-section">
     <div class="admin-cars-container">
@@ -330,7 +330,7 @@ $inactiveCars = $totalCars - $activeCars;
     </div>
 </section>
 
-<?php include 'footer.php'; ?>
+<?php include 'Includes/footer.php'; ?>
 
 </body>
 </html>

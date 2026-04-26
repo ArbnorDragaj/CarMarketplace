@@ -39,6 +39,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <title>Kontakti - CarMarketPlace</title>
     
     <link rel="stylesheet" href="Style/contact.css">
+    <?php include "Includes/header.php"; ?>
+        <link rel="stylesheet" href="Style/style.css">
+
 </head>
 <body>
 
@@ -71,6 +74,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 </section>
 
 <script src="contact.js"></script>
+<?php include "Includes/footer.php"; ?>
 
 </body>
 </html>
