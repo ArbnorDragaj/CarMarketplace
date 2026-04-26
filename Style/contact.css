@@ -4,89 +4,141 @@ body {
   font-family: "Segoe UI", sans-serif;
 
   background:
-    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-    url("../img/car\ 4.jpg");
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("../img/car 4.jpg");
 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-.contact-form {
+/* SECTION */
+.contact-section {
+  position: relative;
+  height: 100vh;
+}
+
+/* FORM BOX (CENTER - DARK GLASS) */
+.contact-form-box {
   width: 420px;
-  margin: 80px auto;
   padding: 35px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background: rgba(10, 20, 40, 0.9);
+  border-radius: 16px;
+
+  border: 1px solid rgba(255, 215, 0, 0.3);
+
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.25);
+
   text-align: center;
   animation: fadeIn 0.6s ease-in-out;
+  z-index: 10;
 }
 
-.contact-form h2 {
+/* TITLE */
+.contact-form-box h2 {
   margin-bottom: 20px;
-  color: #333;
+  color: #ffd700;
+  font-size: 28px;
 }
 
-.contact-form input,
-.contact-form textarea {
+/* LABELS */
+.contact-form-box label {
+  display: block;
+  text-align: left;
+  color: #ccc;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* INPUTS */
+.contact-form-box input,
+.contact-form-box textarea {
   width: 100%;
   padding: 12px;
-  margin: 12px 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  margin: 8px 0;
+
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #333;
+  border-radius: 10px;
+
+  color: white;
+  font-size: 14px;
   outline: none;
   transition: 0.3s;
-  font-size: 14px;
 }
 
-.contact-form input:focus,
-.contact-form textarea:focus {
-  border-color: #4facfe;
-  box-shadow: 0 0 5px rgba(79, 172, 254, 0.4);
+.contact-form-box input::placeholder,
+.contact-form-box textarea::placeholder {
+  color: #aaa;
 }
 
-.contact-form textarea {
+.contact-form-box input:focus,
+.contact-form-box textarea:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+/* TEXTAREA */
+.contact-form-box textarea {
   resize: none;
   height: 110px;
 }
 
-.contact-form button {
+/* BUTTON */
+.contact-form-box button {
   width: 100%;
   padding: 12px;
-  background: #4facfe;
+  margin-top: 10px;
+
+  background: linear-gradient(90deg, #ffd700, #ffb700);
   border: none;
-  color: white;
+
+  color: black;
   font-size: 16px;
-  border-radius: 8px;
+  font-weight: bold;
+
+  border-radius: 10px;
   cursor: pointer;
   transition: 0.3s;
 }
 
-.contact-form button:hover {
-  background: #00c6ff;
+.contact-form-box button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+/* ALERTS */
+.alert {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
 }
 
 .error {
-  color: red;
-  font-weight: bold;
-  margin-bottom: 10px;
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff4d4d;
 }
 
 .success {
-  color: green;
-  font-weight: bold;
-  margin-bottom: 10px;
+  background: rgba(0, 255, 120, 0.2);
+  color: #00ff88;
 }
 
-/* Animation */
+/* ANIMATION */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translate(-50%, -60%);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
   }
 }

@@ -5,18 +5,20 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$name = $_COOKIE['contact_name'] ?? "";
-$email = $_COOKIE['contact_email'] ?? "";
-
+// Kontroll login
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit();
 }
 
+// Merr cookies nëse ekzistojnë
+$name = $_COOKIE['contact_name'] ?? "";
+$email = $_COOKIE['contact_email'] ?? "";
+
 $error = "";
 $success = "";
-$error = "";
 
+// Kur submit forma
 if (isset($_POST['send_message'])) {
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
@@ -35,8 +37,12 @@ if (isset($_POST['send_message'])) {
     } elseif (strlen($message) < 10) {
         $error = "Mesazhi duhet të ketë së paku 10 karaktere!";
     } else {
+        // Ruaj në cookie
         setcookie("contact_name", $name, time() + (86400 * 30), "/");
         setcookie("contact_email", $email, time() + (86400 * 30), "/");
+
+        // Këtu mundesh me shtu DB ose email
+
         $success = "Mesazhi u dërgua me sukses!";
     }
 }
@@ -48,25 +54,19 @@ if (isset($_POST['send_message'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kontakti - CarMarketPlace</title>
-    
-    <link rel="stylesheet" href="Style/contact.css">
-    <?php include "Includes/header.php"; ?>
-        <link rel="stylesheet" href="Style/style.css">
 
+    <link rel="stylesheet" href="Style/style.css">
+    <link rel="stylesheet" href="Style/contact.css">
 </head>
 <body>
 
-require "Includes/header.php";
-?>
-
-<link rel="stylesheet" href="style/contact.css">
-<link rel="stylesheet" href="style/style.css">
+<?php include "Includes/header.php"; ?>
 
 <section class="contact-hero">
     <div class="contact-hero-text">
         <span>WE'D LOVE TO HEAR FROM YOU</span>
         <h1>Contact Us</h1>
-        <p>Have a question or need help? Fill out the form and our team will get back to you as soon as possible.</p>
+        <p>Have a question or need help? Fill out the form and our team will get back to you.</p>
     </div>
 </section>
 
@@ -84,18 +84,18 @@ require "Includes/header.php";
 
         <form method="POST">
             <label>Full Name</label>
-            <input type="text" name="name" placeholder="Your name"
+            <input type="text" name="name"
                    value="<?php echo htmlspecialchars($name); ?>" required>
 
-            <label>Email Address</label>
-            <input type="email" name="email" placeholder="Your email"
+            <label>Email</label>
+            <input type="email" name="email"
                    value="<?php echo htmlspecialchars($email); ?>" required>
 
             <label>Subject</label>
-            <input type="text" name="subject" placeholder="How can we help?" required>
+            <input type="text" name="subject" required>
 
             <label>Message</label>
-            <textarea name="message" placeholder="Write your message here..." required></textarea>
+            <textarea name="message" required></textarea>
 
             <button type="submit" name="send_message">Send Message</button>
         </form>
@@ -104,38 +104,10 @@ require "Includes/header.php";
     <div class="contact-info-box">
         <h2>Get in Touch</h2>
 
-        <div class="info-item">
-            <div class="icon">📍</div>
-            <div>
-                <h3>Address</h3>
-                <p>Rr. Skënderbeu, Prishtinë, Kosova</p>
-            </div>
-        </div>
-
-        <div class="info-item">
-            <div class="icon">📞</div>
-            <div>
-                <h3>Phone</h3>
-                <p>+383 44 123 456</p>
-            </div>
-        </div>
-
-        <div class="info-item">
-            <div class="icon">✉️</div>
-            <div>
-                <h3>Email</h3>
-                <p>info@carmarketplace.com</p>
-            </div>
-        </div>
-
-        <div class="info-item">
-            <div class="icon">⏰</div>
-            <div>
-                <h3>Working Hours</h3>
-                <p>Mon - Fri: 09:00 - 18:00</p>
-                <p>Sat: 10:00 - 15:00</p>
-            </div>
-        </div>
+        <p>📍 Prishtinë, Kosovë</p>
+        <p>📞 +383 44 123 456</p>
+        <p>✉️ info@carmarketplace.com</p>
+        <p>⏰ Mon - Fri: 09:00 - 18:00</p>
     </div>
 </section>
 
@@ -146,7 +118,10 @@ require "Includes/header.php";
     </div>
     <a href="sherbimet.php">Browse Cars</a>
 </section>
+
 <script src="contact.js"></script>
+
 <?php include "Includes/footer.php"; ?>
 
-<?php require "Includes/footer.php"; ?>
+</body>
+</html>
