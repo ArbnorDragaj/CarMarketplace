@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require 'userCl.php';
+require 'classes/userCl.php';
 
 $users = [
     new User("arbnor", "1234", "user"),
