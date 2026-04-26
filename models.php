@@ -51,6 +51,13 @@ $cars = [
 <div class="models-page">
     <h1 class="models-title">Our Cars</h1>
 
+        <div class="favorite-links">
+            <a href="?brand=Audi">Audi</a>
+            <a href="?brand=BMW">BMW</a>
+            <a href="?brand=Mercedes">Mercedes</a>
+            <a href="?brand=Tesla">Tesla</a>
+        </div>
+
         <form method="GET" class="filters-box">
 
         <select name="brandFilter">
@@ -88,17 +95,23 @@ $cars = [
             if ($bodyFilter && $car->getBody() != $bodyFilter) continue;
             if ($fuelFilter && $car->getFuel() != $fuelFilter) continue;
 
+             $isFavorite = ($car->getBrand() == $favorite);
         ?>
 
-            <div class="model-card">
+            <div class="model-card <?php echo $isFavorite ? 'favorite-car' : ''; ?>">
                 <img src="<?php echo $car->getImage(); ?>" alt="<?php echo $car->getFullName(); ?>">
 
                 <div class="model-info">
+                    <?php if ($isFavorite): ?>
+                        <span class="favorite-label">⭐ Favorite</span>
+                    <?php endif; ?>
+
                     <h3><?php echo $car->getFullName(); ?></h3>
                     <p><?php echo $car->getYear(); ?> | <?php echo $car->getFuel(); ?> | <?php echo $car->getBody(); ?></p>
                     <span class="model-price">€<?php echo number_format($car->getPrice()); ?></span>
                 </div>
             </div>
+
 
         <?php endforeach; ?>
 
