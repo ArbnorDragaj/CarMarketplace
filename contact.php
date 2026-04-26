@@ -19,3 +19,21 @@ if (isset($_POST['send_message'])) {
 
     $nameRegex = "/^[a-zA-ZëËçÇ\s]{2,50}$/";
     $emailRegex = "/^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,}$/";
+
+    if (!preg_match($nameRegex, $name)) {
+        $error = "Emri nuk është valid!";
+    } elseif (!preg_match($emailRegex, $email)) {
+        $error = "Email-i nuk është valid!";
+    } elseif (strlen($subject) < 3) {
+        $error = "Subject duhet të ketë së paku 3 karaktere!";
+    } elseif (strlen($message) < 10) {
+        $error = "Mesazhi duhet të ketë së paku 10 karaktere!";
+    } else {
+        setcookie("contact_name", $name, time() + (86400 * 30), "/");
+        setcookie("contact_email", $email, time() + (86400 * 30), "/");
+        $success = "Mesazhi u dërgua me sukses!";
+    }
+}
+
+require "Includes/header.php";
+?>
