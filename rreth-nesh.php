@@ -50,4 +50,4 @@
     </section>
 </div>
 
-<?php include 'footer.php'; ?>
+<?php include 'Includes/footer.php'; ?>
