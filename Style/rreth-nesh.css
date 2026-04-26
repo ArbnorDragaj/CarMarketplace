@@ -1,3 +1,7 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 * {
   margin: 0;
   padding: 0;
@@ -23,6 +27,7 @@ body {
 :root {
     --bg-dark: #0b0e14; /* Background-i i errët */
     --card-bg: #161b22; /* Background-i i kartave te blogu */
+    --primary-red: #ff2d2d; /* E kuqja te tekstet dhe butonat */
     --primary-red: #ff2e2e; /* E kuqja te tekstet dhe butonat */
     --text-white: #ffffff;
 }
