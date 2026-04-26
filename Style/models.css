@@ -258,3 +258,16 @@
 .favorite-car {
   border: 2px solid #f1c40f;
 }
+
+.filters-box {
+  height: fit-content;
+}
+
+.models-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.filters-box select option {
+  color: black;
+}
