@@ -36,14 +36,33 @@ $cars = [
 
 
 
-foreach ($cars as $car) {
-
-    if ($car->getBrand() == $favorite) {
-        echo "<p><strong>⭐ " . $car->getFullName() . " (Favorite)</strong></p>";
-    } else {
-        echo "<p>" . $car->getFullName() . "</p>";
-    }
-}
-
 
 ?>
+
+<?php include 'header.php'; ?>
+
+<link rel="stylesheet" href="Style/models.css">
+
+<div class="models-page">
+    <h1 class="models-title">Our Cars</h1>
+
+    <div class="models-grid">
+
+        <?php foreach ($cars as $car): ?>
+
+            <div class="model-card">
+                <img src="<?php echo $car->getImage(); ?>" alt="<?php echo $car->getFullName(); ?>">
+
+                <div class="model-info">
+                    <h3><?php echo $car->getFullName(); ?></h3>
+                    <p><?php echo $car->getYear(); ?> | <?php echo $car->getFuel(); ?> | <?php echo $car->getBody(); ?></p>
+                    <span class="model-price">€<?php echo number_format($car->getPrice()); ?></span>
+                </div>
+            </div>
+
+        <?php endforeach; ?>
+
+    </div>
+</div>
+
+<?php include 'footer.php'; ?>
