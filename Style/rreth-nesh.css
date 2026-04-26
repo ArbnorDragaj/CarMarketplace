@@ -4,7 +4,16 @@
     box-sizing: border-box;
 }
 
-
+body {
+  font-family: "Segoe UI", sans-serif;
+   background:
+    linear-gradient(rgba(5, 10, 24, 0.88), rgba(5, 10, 24, 0.95)),
+    url("../img/car5.webp");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #e5e7eb;
+}
 
 /* Ngjyrat që pashë te fotot tua */
 :root {
@@ -15,7 +24,7 @@
 }
 
 .about-container {
-    background-color: var(--bg-dark);
+    
     color: var(--text-white);
     padding: 100px 10%;
     font-family: 'Poppins', sans-serif;
