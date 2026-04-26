@@ -56,6 +56,6 @@ Quality, Guarantee, <strong>Stability</strong> with Us
 <br>
 <br>
 
-    <?php include 'footer.php'; ?>
+    <?php include 'Includes/footer.php'; ?>
 
 </body>
