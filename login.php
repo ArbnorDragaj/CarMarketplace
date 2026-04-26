@@ -1,26 +1,32 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require 'classes/userCl.php';
 
 $users = [
-    "admin" => ["password" => "1234", "role" => "admin"],
-    "arbnor" => ["password" => "1234", "role" => "user"]
+    new User("arbnor", "1234", "user"),
+    new User("admin", "1234", "admin")
 ];
 
 $error = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'] ?? "";
-    $password = $_POST['password'] ?? "";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
 
-    if (isset($users[$username]) && $users[$username]['password'] === $password) {
-        $_SESSION['user'] = $username;
-        $_SESSION['role'] = $users[$username]['role'];
+    foreach ($users as $user) {
+        if ($user->getUsername() === $username && $user->checkPassword($password)) {
+            $_SESSION['user'] = $user->getUsername();
+            $_SESSION['role'] = $user->getRole();
 
-        header("Location: index.php");
-        exit();
-    } else {
-        $error = "Username ose password gabim!";
+            header("Location: index.php");
+            exit();
+        }
     }
+
+    $error = "Username ose password gabim.";
 }
 ?>
 
@@ -39,11 +45,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="login-box">
         <h2>Login</h2>
 
-        <?php if ($error): ?>
+        <?php if (!empty($error)): ?>
             <div class="error"><?php echo $error; ?></div>
         <?php endif; ?>
 
-        <form method="post" autocomplete="off">
+        <form method="post" action="login.php" autocomplete="off">
             <div class="input-box">
                 <input type="text" name="username" placeholder="Username" autocomplete="off" required>
             </div>
@@ -53,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <i class="fa-solid fa-eye toggle" id="eye" onclick="togglePassword()"></i>
             </div>
 
-            <button type="submit" class="login-btn">Login</button>
+            <button type="submit" name="login" class="login-btn">Login</button>
         </form>
     </div>
 
