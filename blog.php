@@ -117,10 +117,10 @@ $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
 <head>
     <meta charset="UTF-8">
     <title>Blog Spot</title>
-    <link rel="stylesheet" href="style/blog.css">
+    <link rel="stylesheet" href="Style/blog.css">
     <link rel="stylesheet" href="Style/style.css">
 
-    <?php include "header.php"; ?>
+    <?php include "Includes/header.php"; ?>
 </head>
 <body>
 
@@ -148,19 +148,16 @@ $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
 <div class="app">
 
     <nav class="navbar">
-        <h2>Blog Spot</h2>
-
-        
-
-        <div class="user-area">
-            <span><?php echo htmlspecialchars($_SESSION['user']); ?></span>
-            <a href="?logout=true" class="logout">Logout</a>
-        </div>
     </nav>
 
     <section class="hero">
         <div>
-            <h1>Welcome back, <?php echo htmlspecialchars($_SESSION['user']); ?> </h1>
+            <h1>
+  Welcome back,
+  <span style="color: #e70909;">
+    <?php echo htmlspecialchars($_SESSION['user']); ?>
+ </span>
+</h1>
             <p>Discover stories, ideas and inspiration.</p>
         </div>
 
@@ -298,7 +295,7 @@ $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
 <?php endif; ?>
 
 <script src="Script/blog.js"></script>
- <?php include "footer.php"; ?>
+ <?php include "Includes/footer.php"; ?>
 
 
 <?php endif; ?>

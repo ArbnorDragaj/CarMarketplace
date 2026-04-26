@@ -1,83 +1,99 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #050b14;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 .models-page {
   min-height: 100vh;
   background: #050b14;
   color: white;
   font-family: Arial, Helvetica, sans-serif;
-  padding: 50px 70px;
+  padding: 180px 70px 50px;
 }
 
-.models-page * {
-  box-sizing: border-box;
-}
-
-.models-header {
-  margin-bottom: 35px;
-}
-
-.models-header h2 {
+.models-title {
+  text-align: center;
   font-size: 42px;
-  margin: 0 0 10px;
+  margin: 0 0 30px;
   color: white;
 }
 
-.models-header h2 span {
-  color: #e70909;
+.favorite-links {
+  text-align: center;
+  margin-bottom: 25px;
 }
 
-.models-header p {
-  margin: 0;
-  font-size: 17px;
-  color: #c8d0dc;
+.favorite-links a {
+  margin: 0 10px;
+  color: #e70909;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.favorite-links a:hover {
+  color: #ff2d2d;
 }
 
 .models-layout {
-  display: flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 280px 1fr;
   gap: 35px;
-  align-items: flex-start;
+  align-items: start;
 }
 
 .filters-box {
-  width: 260px;
-  background: rgba(5, 12, 22, 0.82);
-  border: 1px solid rgba(231, 9, 9, 0.35);
+  width: 100%;
+  height: fit-content;
+  position: sticky;
+  top: 120px;
+  background: rgba(5, 12, 22, 0.9);
+  border: 1px solid rgba(231, 9, 9, 0.3);
   border-radius: 18px;
   padding: 24px;
   box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
-  position: sticky;
-  top: 100px;
 }
 
-.filters-box h3 {
-  margin: 0 0 20px;
-  color: #f1c40f;
-  font-size: 24px;
-}
-
-.filter-group {
-  margin-bottom: 24px;
-}
-
-.filter-group h4 {
-  margin: 0 0 12px;
-  color: white;
-  font-size: 16px;
-}
-
-.filter-group a {
-  display: inline-block;
-  margin: 5px 5px 5px 0;
-  padding: 9px 14px;
+.filters-box select,
+.filters-box button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
   border-radius: 10px;
-  color: white;
-  text-decoration: none;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: 0.25s ease;
+  border: none;
+  font-weight: 600;
 }
 
-.filter-group a:hover {
+.filters-box select {
+  height: 48px;
+  background: #1b222c;
+  color: white;
+}
+
+.filters-box select option {
+  background: #1b222c;
+  color: white;
+}
+
+.filters-box select option:checked {
   background: #e70909;
-  border-color: #e70909;
+  color: white;
+}
+
+.filters-box button {
+  background: #e70909;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.filters-box button:hover {
+  background: #ff2d2d;
 }
 
 .clear-filter {
@@ -89,33 +105,21 @@
 }
 
 .models-content {
-  flex: 1;
-}
-
-.models-topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-}
-
-.models-topbar p {
-  margin: 0;
-  color: #c8d0dc;
-  font-size: 16px;
+  width: 100%;
+  min-width: 0;
 }
 
 .models-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 26px;
+  gap: 25px;
 }
 
 .model-card {
-  background: rgba(5, 12, 22, 0.86);
+  background: #0b1623;
   border-radius: 18px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255,255,255,0.1);
   box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
   transition: 0.3s ease;
 }
@@ -138,67 +142,50 @@
 
 .model-info h3 {
   margin: 0 0 12px;
-  font-size: 24px;
+  font-size: 22px;
   color: white;
 }
 
 .model-info p {
   margin: 0 0 7px;
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 14px;
   color: #c8d0dc;
 }
 
 .model-price {
-  font-size: 24px;
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 22px;
   color: #e70909;
   font-weight: bold;
-  margin: 15px 0;
-}
-
-.model-btn {
-  display: inline-block;
-  padding: 11px 22px;
-  background: transparent;
-  border: 2px solid #e70909;
-  color: white;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: 0.3s ease;
-}
-
-.model-btn:hover {
-  background: #e70909;
-}
-
-.favorite-car {
-  border-color: #f1c40f;
-  box-shadow: 0 18px 38px rgba(241, 196, 15, 0.18);
 }
 
 .favorite-label {
+  display: inline-block;
+  margin-bottom: 8px;
   color: #f1c40f;
   font-weight: bold;
 }
 
+.favorite-car {
+  border: 2px solid #f1c40f;
+  box-shadow: 0 18px 38px rgba(241, 196, 15, 0.18);
+}
+
+.site-footer {
+  margin-top: 0;
+}
+
 @media (max-width: 900px) {
   .models-page {
-    padding: 35px 20px;
+    padding: 150px 20px 35px;
   }
 
   .models-layout {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .filters-box {
-    width: 100%;
     position: static;
-  }
-
-  .models-topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
   }
 }

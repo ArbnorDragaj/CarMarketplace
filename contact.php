@@ -34,6 +34,21 @@ if (isset($_POST['send_message'])) {
         $success = "Mesazhi u dërgua me sukses!";
     }
 }
+?>
+
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakti - CarMarketPlace</title>
+    
+    <link rel="stylesheet" href="Style/contact.css">
+    <?php include "Includes/header.php"; ?>
+        <link rel="stylesheet" href="Style/style.css">
+
+</head>
+<body>
 
 require "Includes/header.php";
 ?>
@@ -125,5 +140,7 @@ require "Includes/header.php";
     </div>
     <a href="sherbimet.php">Browse Cars</a>
 </section>
+<script src="contact.js"></script>
+<?php include "Includes/footer.php"; ?>
 
 <?php require "Includes/footer.php"; ?>
