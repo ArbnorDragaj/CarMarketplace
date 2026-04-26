@@ -8,6 +8,12 @@ if (session_status() === PHP_SESSION_NONE) {
 $name = $_COOKIE['contact_name'] ?? "";
 $email = $_COOKIE['contact_email'] ?? "";
 
+if (!isset($_SESSION['user'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$error = "";
 $success = "";
 $error = "";
 
