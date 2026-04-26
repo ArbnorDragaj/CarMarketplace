@@ -13,6 +13,11 @@ if (isset($_GET['brand'])) {
 
 $favorite = $_SESSION['favorite_brand'] ?? "None";
 
+// filters
+$brandFilter = $_GET['brandFilter'] ?? '';
+$bodyFilter  = $_GET['body'] ?? '';
+$fuelFilter  = $_GET['fuel'] ?? '';
+
 
 $cars = [
 
@@ -46,9 +51,44 @@ $cars = [
 <div class="models-page">
     <h1 class="models-title">Our Cars</h1>
 
+        <form method="GET" class="filters-box">
+
+        <select name="brandFilter">
+            <option value="">All Brands</option>
+            <option value="Audi" <?php if ($brandFilter == "Audi") echo "selected"; ?>>Audi</option>
+            <option value="BMW" <?php if ($brandFilter == "BMW") echo "selected"; ?>>BMW</option>
+            <option value="Mercedes" <?php if ($brandFilter == "Mercedes") echo "selected"; ?>>Mercedes</option>
+            <option value="Tesla" <?php if ($brandFilter == "Tesla") echo "selected"; ?>>Tesla</option>
+        </select>
+
+        <select name="body">
+            <option value="">All Types</option>
+            <option value="Sedan" <?php if ($bodyFilter == "Sedan") echo "selected"; ?>>Sedan</option>
+            <option value="SUV" <?php if ($bodyFilter == "SUV") echo "selected"; ?>>SUV</option>
+            <option value="Sport" <?php if ($bodyFilter == "Sport") echo "selected"; ?>>Sport</option>
+        </select>
+
+        <select name="fuel">
+            <option value="">All Fuel</option>
+            <option value="Petrol" <?php if ($fuelFilter == "Petrol") echo "selected"; ?>>Petrol</option>
+            <option value="Diesel" <?php if ($fuelFilter == "Diesel") echo "selected"; ?>>Diesel</option>
+            <option value="Electric" <?php if ($fuelFilter == "Electric") echo "selected"; ?>>Electric</option>
+        </select>
+
+        <button type="submit">Filter</button>
+        <a href="models.php" class="clear-filter">Clear</a>
+
+    </form>
+
     <div class="models-grid">
 
-        <?php foreach ($cars as $car): ?>
+        <?php foreach ($cars as $car):
+        
+            if ($brandFilter && $car->getBrand() != $brandFilter) continue;
+            if ($bodyFilter && $car->getBody() != $bodyFilter) continue;
+            if ($fuelFilter && $car->getFuel() != $fuelFilter) continue;
+
+        ?>
 
             <div class="model-card">
                 <img src="<?php echo $car->getImage(); ?>" alt="<?php echo $car->getFullName(); ?>">
