@@ -12,9 +12,7 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-if (!isset($_SESSION['role'])) {
-    $_SESSION['role'] = "admin";
-}
+
 
 if ($_SESSION['role'] !== "admin") {
     header("Location: index.php");
