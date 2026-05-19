@@ -23,6 +23,45 @@ function e($value){
 function isAdmin(){
     return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 }
+
+// Merr user_id nga session ose nga tabela users
+function getCurrentUserId($pdo) {
+    if (isset($_SESSION['user_id'])) {
+        return (int)$_SESSION['user_id'];
+    }
+
+    if (!isset($_SESSION['user'])) {
+        return null;
+    }
+
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? LIMIT 1");
+    $stmt->execute([$_SESSION['user']]);
+    $user = $stmt->fetch();
+
+    if ($user) {
+        $_SESSION['user_id'] = (int)$user['id'];
+        return (int)$user['id'];
+    }
+
+    return null;
+}
+
+// Validimi i te dhenave
+function validatePost($title, $content, $category, $categories) {
+    if (trim($title) === "" || strlen(trim($title)) < 3) {
+        return "Titulli duhet te kete se paku 3 karaktere.";
+    }
+
+    if (trim($content) === "" || strlen(trim($content)) < 10) {
+        return "Permbajtja duhet te kete se paku 10 karaktere.";
+    }
+
+    if (!in_array($category, $categories, true)) {
+        return "Kategoria nuk eshte valide.";
+    }
+
+    return "";
+}
 function uploadImage() {
     if (empty($_FILES['image']['name'])) return "";
 
