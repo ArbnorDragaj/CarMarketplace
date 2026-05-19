@@ -1,40 +1,28 @@
 <?php
 session_start();
+require_once "config/db.php";
 
+$categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
+$erorr="";
 
+//ketu kontrollojm se a osht useri loged in
 
-
-
-$users = [
-    "admin" => ["password" => "1234", "role" => "admin"],
-    "arbnor" => ["password" => "1234", "role" => "user"]
-];
-
-if (!file_exists("posts.json")) {
-    file_put_contents("posts.json", json_encode([]));
-}
-
-$posts = json_decode(file_get_contents("posts.json"), true);
-if (!is_array($posts)) $posts = [];
-
-if (isset($_POST['login'])) {
-    $u = $_POST['username'];
-    $p = $_POST['password'];
-
-    if (isset($users[$u]) && $users[$u]['password'] === $p) {
-        $_SESSION['user'] = $u;
-        $_SESSION['role'] = $users[$u]['role'];
-    } else {
-        $error = "Login gabim!";
-    }
-}
-
-if (isset($_GET['logout'])) {
-    session_destroy();
-    header("Location: blog.php");
+if(!isset($_SESSION['user'])){
+    header("Location: login.php");
     exit();
 }
 
+//krijojm ni funksion i cili na mbron nga XSS
+
+function e($value){
+    return htmlspecialchars((string)$value , ENT_QUOTES ,'UTF-8');
+}
+
+//kontrollojm a eshte useri admin
+
+function isAdmin(){
+    return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+}
 function uploadImage() {
     if (empty($_FILES['image']['name'])) return "";
 
@@ -109,7 +97,6 @@ if (isset($_POST['edit_post']) && isset($_SESSION['role']) && $_SESSION['role'] 
     exit();
 }
 
-$categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
 ?>
 
 <!DOCTYPE html>
