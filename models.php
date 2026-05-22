@@ -7,9 +7,14 @@ if (!isset($_SESSION['user'])) {
 }
 
 require_once __DIR__ . '/classes/carCL.php';
+require_once __DIR__ . '/config/db.php';
+
+
+if (!isset($pdo) || !$pdo instanceof PDO) {
+    die("Database connection is not available.");
+}
 
 $site_name = "CarMarketPlace";
-
 
 if (!function_exists('e')) {
     function e($value) {
@@ -23,7 +28,6 @@ if (!function_exists('e')) {
 $allowedBrands = ["Audi", "BMW", "Mercedes", "Tesla"];
 $allowedBodies = ["Sedan", "SUV", "Sport"];
 $allowedFuels  = ["Petrol", "Diesel", "Electric"];
-
 
 function getAllowedFilter($key, $allowedValues) {
     if (!isset($_GET[$key])) {
@@ -50,33 +54,48 @@ $favorite = $_SESSION['favorite_brand'] ?? "None";
 
 /*
     Filtrat e faqes.
+    Në këtë commit veturat merren nga databaza.
+    Filtrimi i plotë në SQL do të rregullohet në commit-in tjetër.
 */
 $brandFilter = getAllowedFilter('brandFilter', $allowedBrands);
 $bodyFilter  = getAllowedFilter('body', $allowedBodies);
 $fuelFilter  = getAllowedFilter('fuel', $allowedFuels);
 
+$cars = [];
+$dbError = '';
 
-$cars = [
+try {
+    $sql = "SELECT brand, model, fuel, body_type, year, price, image
+            FROM cars
+            WHERE status = :status
+            ORDER BY brand ASC, model ASC";
 
-    new Car("Audi", "RS7", "Petrol", "Sedan", 2023, 85000, "img/audi-sedan.png"),
-    new Car("Audi", "R8", "Petrol", "Sport", 2022, 150000, "img/audi-sport.jpg"),
-    new Car("Audi", "Q5", "Diesel", "SUV", 2021, 45000, "img/audi-suv.jpg"),
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':status' => 'active'
+    ]);
 
-    new Car("BMW", "3 Series", "Petrol", "Sedan", 2023, 50000, "img/bmw-sedan.jpg"),
-    new Car("BMW", "M4", "Petrol", "Sport", 2022, 90000, "img/bmw-sport.jpg"),
-    new Car("BMW", "X5", "Diesel", "SUV", 2021, 70000, "img/bmw-suv.jpg"),
+    $rows = $stmt->fetchAll();
 
-    new Car("Mercedes", "E-Class", "Petrol", "Sedan", 2023, 60000, "img/mercedes-sedan.jpg"),
-    new Car("Mercedes", "AMG GT", "Petrol", "Sport", 2022, 140000, "img/mercedes-sport.jpg"),
-    new Car("Mercedes", "G-Class", "Petrol", "SUV", 2023, 130000, "img/mercedes-suv.jpg"),
+    foreach ($rows as $row) {
+        $cars[] = new Car(
+            $row['brand'],
+            $row['model'],
+            $row['fuel'],
+            $row['body_type'],
+            $row['year'],
+            $row['price'],
+            $row['image']
+        );
+    }
+} catch (PDOException $e) {
+    $dbError = "Cars could not be loaded at the moment.";
+}
 
-    new Car("Tesla", "Model S", "Electric", "Sedan", 2023, 90000, "img/tesla-sedan.jpg"),
-    new Car("Tesla", "Roadster", "Electric", "Sport", 2022, 200000, "img/tesla-sport.jpg"),
-    new Car("Tesla", "Model X", "Electric", "SUV", 2023, 110000, "img/tesla-suv.jpg"),
-
-];
-
-
+/*
+    Për momentin filtrimi mbetet në PHP që faqja të vazhdojë të punojë.
+    Në commit-in tjetër do ta kalojmë filtrimin brenda query-t me prepared statements.
+*/
 $filteredCars = [];
 
 foreach ($cars as $car) {
@@ -162,7 +181,13 @@ foreach ($cars as $car) {
         <div class="models-content">
             <div class="models-grid">
 
-                <?php if (count($filteredCars) > 0): ?>
+                <?php if ($dbError !== ''): ?>
+
+                    <p class="no-cars-message">
+                        <?php echo e($dbError); ?>
+                    </p>
+
+                <?php elseif (count($filteredCars) > 0): ?>
 
                     <?php foreach ($filteredCars as $car): ?>
                         <?php $isFavorite = ($car->getBrand() === $favorite); ?>
