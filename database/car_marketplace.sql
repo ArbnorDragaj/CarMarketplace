@@ -1,0 +1,12 @@
+CREATE DATABASE IF NOT EXISTS car_marketplace;
+USE car_marketplace;
+
+CREATE TABLE IF NOT EXISTS posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    title VARCHAR(200) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    content TEXT NOT NULL,
+    image VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
