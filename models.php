@@ -22,6 +22,28 @@ if (!function_exists('e')) {
     }
 }
 
+function safeImagePath($imagePath) {
+    $imagePath = trim((string)$imagePath);
+
+    $isFromImgFolder = strpos($imagePath, 'img/') === 0;
+    $isFromUploadsFolder = strpos($imagePath, 'uploads/cars/') === 0;
+    $hasValidCharacters = preg_match('/^[a-zA-Z0-9_\-\/\. ]+$/', $imagePath);
+
+    if ($imagePath !== '' && ($isFromImgFolder || $isFromUploadsFolder) && $hasValidCharacters) {
+        return $imagePath;
+    }
+
+    return 'img/carBG.jpg';
+}
+
+function formatCarPrice($price) {
+    if (!is_numeric($price)) {
+        return '0';
+    }
+
+    return number_format((float)$price);
+}
+
 /*
     Vlerat e lejuara për filtrat.
 */
@@ -105,6 +127,7 @@ try {
         );
     }
 } catch (PDOException $e) {
+    error_log("Models page database error: " . $e->getMessage());
     $dbError = "Cars could not be loaded at the moment.";
 }
 
@@ -187,9 +210,11 @@ $filteredCars = $cars;
 
                     <?php foreach ($filteredCars as $car): ?>
                         <?php $isFavorite = ($car->getBrand() === $favorite); ?>
+                        <?php $carImage = safeImagePath($car->getImage()); ?>
+                        <?php $carPrice = formatCarPrice($car->getPrice()); ?> ?>
 
                         <div class="model-card <?php echo $isFavorite ? 'favorite-car' : ''; ?>">
-                            <img src="<?php echo e($car->getImage()); ?>" alt="<?php echo e($car->getFullName()); ?>">
+                            <img src="<?php echo e($carImage); ?>" alt="<?php echo e($car->getFullName()); ?>">
 
                             <div class="model-info">
                                 <?php if ($isFavorite): ?>
@@ -205,7 +230,7 @@ $filteredCars = $cars;
                                 </p>
 
                                 <span class="model-price">
-                                    €<?php echo number_format((float)$car->getPrice()); ?>
+                                    €<?php echo e($carPrice); ?>
                                 </span>
                             </div>
                         </div>
