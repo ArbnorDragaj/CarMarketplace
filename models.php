@@ -53,9 +53,7 @@ if (isset($_GET['brand']) && in_array($_GET['brand'], $allowedBrands, true)) {
 $favorite = $_SESSION['favorite_brand'] ?? "None";
 
 /*
-    Filtrat e faqes.
-    Në këtë commit veturat merren nga databaza.
-    Filtrimi i plotë në SQL do të rregullohet në commit-in tjetër.
+    Filtrat e faqes
 */
 $brandFilter = getAllowedFilter('brandFilter', $allowedBrands);
 $bodyFilter  = getAllowedFilter('body', $allowedBodies);
@@ -67,13 +65,31 @@ $dbError = '';
 try {
     $sql = "SELECT brand, model, fuel, body_type, year, price, image
             FROM cars
-            WHERE status = :status
-            ORDER BY brand ASC, model ASC";
+            WHERE status = :status";
+
+    $params = [
+        ':status' => 'active'
+    ];
+
+    if ($brandFilter !== '') {
+        $sql .= " AND brand = :brand";
+        $params[':brand'] = $brandFilter;
+    }
+
+    if ($bodyFilter !== '') {
+        $sql .= " AND body_type = :body_type";
+        $params[':body_type'] = $bodyFilter;
+    }
+
+    if ($fuelFilter !== '') {
+        $sql .= " AND fuel = :fuel";
+        $params[':fuel'] = $fuelFilter;
+    }
+
+    $sql .= " ORDER BY brand ASC, model ASC";
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':status' => 'active'
-    ]);
+    $stmt->execute($params);
 
     $rows = $stmt->fetchAll();
 
@@ -92,27 +108,7 @@ try {
     $dbError = "Cars could not be loaded at the moment.";
 }
 
-/*
-    Për momentin filtrimi mbetet në PHP që faqja të vazhdojë të punojë.
-    Në commit-in tjetër do ta kalojmë filtrimin brenda query-t me prepared statements.
-*/
-$filteredCars = [];
-
-foreach ($cars as $car) {
-    if ($brandFilter !== '' && $car->getBrand() !== $brandFilter) {
-        continue;
-    }
-
-    if ($bodyFilter !== '' && $car->getBody() !== $bodyFilter) {
-        continue;
-    }
-
-    if ($fuelFilter !== '' && $car->getFuel() !== $fuelFilter) {
-        continue;
-    }
-
-    $filteredCars[] = $car;
-}
+$filteredCars = $cars;
 ?>
 
 <!DOCTYPE html>
