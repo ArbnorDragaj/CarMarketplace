@@ -5,48 +5,133 @@ if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit();
 }
-require 'classes/carCL.php';
+
+require_once __DIR__ . '/classes/carCL.php';
+require_once __DIR__ . '/config/db.php';
+
+
+if (!isset($pdo) || !$pdo instanceof PDO) {
+    die("Database connection is not available.");
+}
 
 $site_name = "CarMarketPlace";
-//set favorite brand
 
-if (isset($_GET['brand'])) {
+if (!function_exists('e')) {
+    function e($value) {
+        return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+function safeImagePath($imagePath) {
+    $imagePath = trim((string)$imagePath);
+
+    $isFromImgFolder = strpos($imagePath, 'img/') === 0;
+    $isFromUploadsFolder = strpos($imagePath, 'uploads/cars/') === 0;
+    $hasValidCharacters = preg_match('/^[a-zA-Z0-9_\-\/\. ]+$/', $imagePath);
+
+    if ($imagePath !== '' && ($isFromImgFolder || $isFromUploadsFolder) && $hasValidCharacters) {
+        return $imagePath;
+    }
+
+    return 'img/carBG.jpg';
+}
+
+function formatCarPrice($price) {
+    if (!is_numeric($price)) {
+        return '0';
+    }
+
+    return number_format((float)$price);
+}
+
+/*
+    Vlerat e lejuara për filtrat.
+*/
+$allowedBrands = ["Audi", "BMW", "Mercedes", "Tesla"];
+$allowedBodies = ["Sedan", "SUV", "Sport"];
+$allowedFuels  = ["Petrol", "Diesel", "Electric"];
+
+function getAllowedFilter($key, $allowedValues) {
+    if (!isset($_GET[$key])) {
+        return '';
+    }
+
+    $value = trim($_GET[$key]);
+
+    if (in_array($value, $allowedValues, true)) {
+        return $value;
+    }
+
+    return '';
+}
+
+/*
+    Favorite brand ruhet në session vetëm nëse brendi është valid.
+*/
+if (isset($_GET['brand']) && in_array($_GET['brand'], $allowedBrands, true)) {
     $_SESSION['favorite_brand'] = $_GET['brand'];
 }
 
-//get favorite brand
-
 $favorite = $_SESSION['favorite_brand'] ?? "None";
 
-// filters
-$brandFilter = $_GET['brandFilter'] ?? '';
-$bodyFilter  = $_GET['body'] ?? '';
-$fuelFilter  = $_GET['fuel'] ?? '';
+/*
+    Filtrat e faqes
+*/
+$brandFilter = getAllowedFilter('brandFilter', $allowedBrands);
+$bodyFilter  = getAllowedFilter('body', $allowedBodies);
+$fuelFilter  = getAllowedFilter('fuel', $allowedFuels);
 
+$cars = [];
+$dbError = '';
 
-$cars = [
+try {
+    $sql = "SELECT brand, model, fuel, body_type, year, price, image
+            FROM cars
+            WHERE status = :status";
 
-    new Car("Audi", "RS7", "Petrol", "Sedan", 2023, 85000, "img/audi-sedan.png"),
-    new Car("Audi", "R8", "Petrol", "Sport", 2022, 150000, "img/audi-sport.jpg"),
-    new Car("Audi", "Q5", "Diesel", "SUV", 2021, 45000, "img/audi-suv.jpg"),
+    $params = [
+        ':status' => 'active'
+    ];
 
-    new Car("BMW", "3 Series", "Petrol", "Sedan", 2023, 50000, "img/bmw-sedan.jpg"),
-    new Car("BMW", "M4", "Petrol", "Sport", 2022, 90000, "img/bmw-sport.jpg"),
-    new Car("BMW", "X5", "Diesel", "SUV", 2021, 70000, "img/bmw-suv.jpg"),
+    if ($brandFilter !== '') {
+        $sql .= " AND brand = :brand";
+        $params[':brand'] = $brandFilter;
+    }
 
-    new Car("Mercedes", "E-Class", "Petrol", "Sedan", 2023, 60000, "img/mercedes-sedan.jpg"),
-    new Car("Mercedes", "AMG GT", "Petrol", "Sport", 2022, 140000, "img/mercedes-sport.jpg"),
-    new Car("Mercedes", "G-Class", "Petrol", "SUV", 2023, 130000, "img/mercedes-suv.jpg"),
+    if ($bodyFilter !== '') {
+        $sql .= " AND body_type = :body_type";
+        $params[':body_type'] = $bodyFilter;
+    }
 
-    new Car("Tesla", "Model S", "Electric", "Sedan", 2023, 90000, "img/tesla-sedan.jpg"),
-    new Car("Tesla", "Roadster", "Electric", "Sport", 2022, 200000, "img/tesla-sport.jpg"),
-    new Car("Tesla", "Model X", "Electric", "SUV", 2023, 110000, "img/tesla-suv.jpg"),
+    if ($fuelFilter !== '') {
+        $sql .= " AND fuel = :fuel";
+        $params[':fuel'] = $fuelFilter;
+    }
 
-];
+    $sql .= " ORDER BY brand ASC, model ASC";
 
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
 
+    $rows = $stmt->fetchAll();
 
+    foreach ($rows as $row) {
+        $cars[] = new Car(
+            $row['brand'],
+            $row['model'],
+            $row['fuel'],
+            $row['body_type'],
+            $row['year'],
+            $row['price'],
+            $row['image']
+        );
+    }
+} catch (PDOException $e) {
+    error_log("Models page database error: " . $e->getMessage());
+    $dbError = "Cars could not be loaded at the moment.";
+}
 
+$filteredCars = $cars;
 ?>
 
 <!DOCTYPE html>
@@ -62,16 +147,15 @@ $cars = [
 
 <?php include 'Includes/header.php'; ?>
 
-
-
 <div class="models-page">
     <h1 class="models-title">Our Cars</h1>
 
     <div class="favorite-links">
-        <a href="?brand=Audi">Audi</a>
-        <a href="?brand=BMW">BMW</a>
-        <a href="?brand=Mercedes">Mercedes</a>
-        <a href="?brand=Tesla">Tesla</a>
+        <?php foreach ($allowedBrands as $brand): ?>
+            <a href="?brand=<?php echo urlencode($brand); ?>">
+                <?php echo e($brand); ?>
+            </a>
+        <?php endforeach; ?>
     </div>
 
     <div class="models-layout">
@@ -80,24 +164,32 @@ $cars = [
 
             <select name="brandFilter">
                 <option value="">All Brands</option>
-                <option value="Audi" <?php if ($brandFilter == "Audi") echo "selected"; ?>>Audi</option>
-                <option value="BMW" <?php if ($brandFilter == "BMW") echo "selected"; ?>>BMW</option>
-                <option value="Mercedes" <?php if ($brandFilter == "Mercedes") echo "selected"; ?>>Mercedes</option>
-                <option value="Tesla" <?php if ($brandFilter == "Tesla") echo "selected"; ?>>Tesla</option>
+
+                <?php foreach ($allowedBrands as $brand): ?>
+                    <option value="<?php echo e($brand); ?>" <?php echo ($brandFilter === $brand) ? 'selected' : ''; ?>>
+                        <?php echo e($brand); ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
 
             <select name="body">
                 <option value="">All Types</option>
-                <option value="Sedan" <?php if ($bodyFilter == "Sedan") echo "selected"; ?>>Sedan</option>
-                <option value="SUV" <?php if ($bodyFilter == "SUV") echo "selected"; ?>>SUV</option>
-                <option value="Sport" <?php if ($bodyFilter == "Sport") echo "selected"; ?>>Sport</option>
+
+                <?php foreach ($allowedBodies as $body): ?>
+                    <option value="<?php echo e($body); ?>" <?php echo ($bodyFilter === $body) ? 'selected' : ''; ?>>
+                        <?php echo e($body); ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
 
             <select name="fuel">
                 <option value="">All Fuel</option>
-                <option value="Petrol" <?php if ($fuelFilter == "Petrol") echo "selected"; ?>>Petrol</option>
-                <option value="Diesel" <?php if ($fuelFilter == "Diesel") echo "selected"; ?>>Diesel</option>
-                <option value="Electric" <?php if ($fuelFilter == "Electric") echo "selected"; ?>>Electric</option>
+
+                <?php foreach ($allowedFuels as $fuel): ?>
+                    <option value="<?php echo e($fuel); ?>" <?php echo ($fuelFilter === $fuel) ? 'selected' : ''; ?>>
+                        <?php echo e($fuel); ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
 
             <button type="submit">Filter</button>
@@ -108,30 +200,56 @@ $cars = [
         <div class="models-content">
             <div class="models-grid">
 
-                <?php foreach ($cars as $car):
+                <?php if ($dbError !== ''): ?>
 
-                    if ($brandFilter && $car->getBrand() != $brandFilter) continue;
-                    if ($bodyFilter && $car->getBody() != $bodyFilter) continue;
-                    if ($fuelFilter && $car->getFuel() != $fuelFilter) continue;
+                    <p class="no-cars-message">
+                        <?php echo e($dbError); ?>
+                    </p>
 
-                    $isFavorite = ($car->getBrand() == $favorite);
-                ?>
+                <?php elseif (count($filteredCars) > 0): ?>
 
-                    <div class="model-card <?php echo $isFavorite ? 'favorite-car' : ''; ?>">
-                        <img src="<?php echo $car->getImage(); ?>" alt="<?php echo $car->getFullName(); ?>">
+                    <?php foreach ($filteredCars as $car): ?>
+                        <?php $isFavorite = ($car->getBrand() === $favorite); ?>
+                        <?php $carImage = safeImagePath($car->getImage()); ?>
+                        <?php $carPrice = formatCarPrice($car->getPrice()); ?>
 
-                        <div class="model-info">
-                            <?php if ($isFavorite): ?>
-                                <span class="favorite-label">⭐ Favorite</span>
-                            <?php endif; ?>
+                        <div class="model-card <?php echo $isFavorite ? 'favorite-car' : ''; ?>">
+                            <img src="<?php echo e($carImage); ?>" alt="<?php echo e($car->getFullName()); ?>">
 
-                            <h3><?php echo $car->getFullName(); ?></h3>
-                            <p><?php echo $car->getYear(); ?> | <?php echo $car->getFuel(); ?> | <?php echo $car->getBody(); ?></p>
-                            <span class="model-price">€<?php echo number_format($car->getPrice()); ?></span>
+                            <div class="model-info">
+                                <?php if ($isFavorite): ?>
+                                    <span class="favorite-label">⭐ Favorite</span>
+                                <?php endif; ?>
+
+                                <h3><?php echo e($car->getFullName()); ?></h3>
+
+                                <p>
+                                    <?php echo e($car->getYear()); ?> |
+                                    <?php echo e($car->getFuel()); ?> |
+                                    <?php echo e($car->getBody()); ?>
+                                </p>
+
+                                <div class="price-box">
+                                    <span class="model-price" data-price-eur="<?php echo e($car->getPrice()); ?>">
+                                        €<?php echo e($carPrice); ?>
+                                    </span>
+
+                                    <span class="usd-price">
+                                        Loading USD...
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+
+                <?php else: ?>
+
+                    <p class="no-cars-message">
+                        No cars found for the selected filters.
+                    </p>
+
+                <?php endif; ?>
 
             </div>
         </div>
@@ -140,6 +258,8 @@ $cars = [
 </div>
 
 <?php include 'Includes/footer.php'; ?>
+
+<script src="Script/models.js"></script>
 
 </body>
 </html>
