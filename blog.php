@@ -101,23 +101,34 @@ function uploadImage() {
 }
 
 $userId = getCurrentUserId($pdo);
-if (isset($_POST['add_post']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    $imagePath = uploadImage();
 
-    $posts[] = [
-        "title" => $_POST['title'],
-        "content" => $_POST['content'],
-        "category" => $_POST['category'],
-        "image" => $imagePath,
-        "date" => date("d M Y"),
-        "author" => $_SESSION['user']
-    ];
 
-    file_put_contents("posts.json", json_encode($posts, JSON_PRETTY_PRINT));
-    header("Location: blog.php");
-    exit();
+// ADD POST
+if (isset($_POST['add_post']) && isAdmin()) {
+    $title = trim($_POST['title'] ?? "");
+    $content = trim($_POST['content'] ?? "");
+    $category = $_POST['category'] ?? "";
+
+    $error = validatePost($title, $content, $category, $categories);
+
+    if ($error === "" && $userId !== null) {
+        try {
+            $imagePath = uploadImage();
+
+            $stmt = $pdo->prepare(
+                "INSERT INTO posts (user_id, title, category, content, image)
+                 VALUES (?, ?, ?, ?, ?)"
+            );
+
+            $stmt->execute([$userId, $title, $category, $content, $imagePath]);
+
+            header("Location: blog.php");
+            exit();
+        } catch (PDOException $e) {
+            $error = "Postimi nuk u shtua.";
+        }
+    }
 }
-
 if (isset($_GET['delete']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     $id = $_GET['delete'];
 
