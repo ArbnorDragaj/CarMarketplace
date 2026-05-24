@@ -229,11 +229,17 @@ $filteredCars = $cars;
                                     <?php echo e($car->getBody()); ?>
                                 </p>
 
-                                <span class="model-price">
-                                    €<?php echo e($carPrice); ?>
-                                </span>
-                            </div>
-                        </div>
+            <div class="price-box">
+                    <span class="model-price" data-price-eur="<?php echo e($car->getPrice()); ?>">
+                        €<?php echo e($carPrice); ?>
+                    </span>
+
+                        <span class="usd-price">
+                            Loading USD...
+                        </span>
+                </div>
+            </div>
+        </div>
 
                     <?php endforeach; ?>
 
@@ -252,6 +258,8 @@ $filteredCars = $cars;
 </div>
 
 <?php include 'Includes/footer.php'; ?>
+
+<script src="Script/models.js"></script>
 
 </body>
 </html>
