@@ -179,6 +179,24 @@ if (isset($_POST['edit_post']) && isAdmin()) {
     }
 }
 
+
+// READ POSTS
+try {
+    $stmt = $pdo->prepare(
+        "SELECT posts.*, users.username AS author
+         FROM posts
+         LEFT JOIN users ON posts.user_id = users.id
+         ORDER BY posts.created_at DESC"
+    );
+
+    $stmt->execute();
+    $posts = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $posts = [];
+    $error = "Postimet nuk mund te lexohen.";
+}
+?>
+
 ?>
 
 <!DOCTYPE html>
