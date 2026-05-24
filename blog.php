@@ -3,24 +3,21 @@ session_start();
 require_once "config/db.php";
 
 $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
-$erorr="";
+$error = "";
 
-//ketu kontrollojm se a osht useri loged in
-
-if(!isset($_SESSION['user'])){
+// Kontrollon a eshte useri logged in
+if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit();
 }
 
-//krijojm ni funksion i cili na mbron nga XSS
-
-function e($value){
-    return htmlspecialchars((string)$value , ENT_QUOTES ,'UTF-8');
+// Funksion per mbrojtje nga XSS
+function e($value) {
+    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
 }
 
-//kontrollojm a eshte useri admin
-
-function isAdmin(){
+// Kontrollon a eshte admin
+function isAdmin() {
     return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 }
 
@@ -62,6 +59,7 @@ function validatePost($title, $content, $category, $categories) {
 
     return "";
 }
+
 // Upload i fotos
 function uploadImage() {
     if (empty($_FILES['image']['name'])) {
@@ -101,7 +99,6 @@ function uploadImage() {
 }
 
 $userId = getCurrentUserId($pdo);
-
 
 // ADD POST
 if (isset($_POST['add_post']) && isAdmin()) {
@@ -178,7 +175,6 @@ if (isset($_POST['edit_post']) && isAdmin()) {
         }
     }
 }
-
 
 // READ POSTS
 try {
