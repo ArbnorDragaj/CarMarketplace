@@ -62,26 +62,45 @@ function validatePost($title, $content, $category, $categories) {
 
     return "";
 }
+// Upload i fotos
 function uploadImage() {
-    if (empty($_FILES['image']['name'])) return "";
+    if (empty($_FILES['image']['name'])) {
+        return null;
+    }
 
-    $targetDir = "uploads/";
-    if (!is_dir($targetDir)) mkdir($targetDir);
+    $targetDir = "uploads/blog/";
 
-    $fileName = time() . "_" . basename($_FILES["image"]["name"]);
-    $targetFile = $targetDir . $fileName;
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0777, true);
+    }
 
-    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    $allowed = ["jpg", "jpeg", "png", "gif", "webp"];
+    $fileName = basename($_FILES['image']['name']);
     $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-    if (in_array($ext, $allowed)) {
-        move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile);
+    if (!in_array($ext, $allowed, true)) {
+        return null;
+    }
+
+    if ($_FILES['image']['size'] > 3 * 1024 * 1024) {
+        return null;
+    }
+
+    $newName = time() . "_" . rand(1000, 9999) . "." . $ext;
+    $targetFile = $targetDir . $newName;
+
+    if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
         return $targetFile;
     }
 
-    return "";
+    return null;
 }
 
+$userId = getCurrentUserId($pdo);
 if (isset($_POST['add_post']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     $imagePath = uploadImage();
 
