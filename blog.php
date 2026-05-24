@@ -129,41 +129,54 @@ if (isset($_POST['add_post']) && isAdmin()) {
         }
     }
 }
-if (isset($_GET['delete']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    $id = $_GET['delete'];
 
-    if (isset($posts[$id])) {
-        if (!empty($posts[$id]['image']) && file_exists($posts[$id]['image'])) {
-            unlink($posts[$id]['image']);
+// EDIT POST
+if (isset($_POST['edit_post']) && isAdmin()) {
+    $id = (int)($_POST['id'] ?? 0);
+    $title = trim($_POST['title'] ?? "");
+    $content = trim($_POST['content'] ?? "");
+    $category = $_POST['category'] ?? "";
+
+    $error = validatePost($title, $content, $category, $categories);
+
+    if ($error === "" && $id > 0) {
+        try {
+            $stmt = $pdo->prepare("SELECT image FROM posts WHERE id = ? LIMIT 1");
+            $stmt->execute([$id]);
+            $oldPost = $stmt->fetch();
+
+            if ($oldPost) {
+                $newImage = uploadImage();
+
+                if ($newImage !== null) {
+                    if (!empty($oldPost['image']) && file_exists($oldPost['image'])) {
+                        unlink($oldPost['image']);
+                    }
+
+                    $stmt = $pdo->prepare(
+                        "UPDATE posts 
+                         SET title = ?, category = ?, content = ?, image = ?
+                         WHERE id = ?"
+                    );
+
+                    $stmt->execute([$title, $category, $content, $newImage, $id]);
+                } else {
+                    $stmt = $pdo->prepare(
+                        "UPDATE posts 
+                         SET title = ?, category = ?, content = ?
+                         WHERE id = ?"
+                    );
+
+                    $stmt->execute([$title, $category, $content, $id]);
+                }
+            }
+
+            header("Location: blog.php");
+            exit();
+        } catch (PDOException $e) {
+            $error = "Postimi nuk u perditesua.";
         }
-
-        unset($posts[$id]);
-        $posts = array_values($posts);
-        file_put_contents("posts.json", json_encode($posts, JSON_PRETTY_PRINT));
     }
-
-    header("Location: blog.php");
-    exit();
-}
-
-if (isset($_POST['edit_post']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    $id = $_POST['id'];
-
-    if (isset($posts[$id])) {
-        $posts[$id]['title'] = $_POST['title'];
-        $posts[$id]['content'] = $_POST['content'];
-        $posts[$id]['category'] = $_POST['category'];
-
-        $newImage = uploadImage();
-        if ($newImage !== "") {
-            $posts[$id]['image'] = $newImage;
-        }
-
-        file_put_contents("posts.json", json_encode($posts, JSON_PRETTY_PRINT));
-    }
-
-    header("Location: blog.php");
-    exit();
 }
 
 ?>
