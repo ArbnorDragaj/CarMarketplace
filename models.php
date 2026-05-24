@@ -211,7 +211,7 @@ $filteredCars = $cars;
                     <?php foreach ($filteredCars as $car): ?>
                         <?php $isFavorite = ($car->getBrand() === $favorite); ?>
                         <?php $carImage = safeImagePath($car->getImage()); ?>
-                        <?php $carPrice = formatCarPrice($car->getPrice()); ?> ?>
+                        <?php $carPrice = formatCarPrice($car->getPrice()); ?>
 
                         <div class="model-card <?php echo $isFavorite ? 'favorite-car' : ''; ?>">
                             <img src="<?php echo e($carImage); ?>" alt="<?php echo e($car->getFullName()); ?>">
@@ -229,17 +229,17 @@ $filteredCars = $cars;
                                     <?php echo e($car->getBody()); ?>
                                 </p>
 
-            <div class="price-box">
-                    <span class="model-price" data-price-eur="<?php echo e($car->getPrice()); ?>">
-                        €<?php echo e($carPrice); ?>
-                    </span>
+                                <div class="price-box">
+                                    <span class="model-price" data-price-eur="<?php echo e($car->getPrice()); ?>">
+                                        €<?php echo e($carPrice); ?>
+                                    </span>
 
-                        <span class="usd-price">
-                            Loading USD...
-                        </span>
-                </div>
-            </div>
-        </div>
+                                    <span class="usd-price">
+                                        Loading USD...
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
 
                     <?php endforeach; ?>
 
