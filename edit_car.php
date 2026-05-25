@@ -157,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Edito veturen - CarMarketPlace</title>
-    <link rel="stylesheet" href="Style/style.css">
+    <link rel="stylesheet" href="Style/style.css?v=3">
     <link rel="stylesheet" href="Style/admin.css">
 </head>
 <body>

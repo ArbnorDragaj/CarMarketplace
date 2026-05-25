@@ -233,7 +233,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <title>Blog</title>
-    <link rel="stylesheet" href="Style/style.css">
+    <link rel="stylesheet" href="Style/style.css?v=3">
     <link rel="stylesheet" href="Style/blog.css">
 </head>
 <body>

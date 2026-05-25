@@ -39,7 +39,7 @@ require "Includes/header.php";
 ?>
 
 <link rel="stylesheet" href="Style/contact.css">
-<link rel="stylesheet" href="Style/style.css">
+<link rel="stylesheet" href="Style/style.css?v=3">
 
 <section class="contact-hero">
     <div class="contact-hero-text">
