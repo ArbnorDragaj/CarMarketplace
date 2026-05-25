@@ -1,140 +1,103 @@
 <?php
 $site_name = "CarMarketPlace";
+$currentPage = "contact.php";
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once "config.php";
+
 $name = $_COOKIE['contact_name'] ?? "";
 $email = $_COOKIE['contact_email'] ?? "";
-
+$subject = "";
+$message = "";
 $success = "";
 $error = "";
 
-if (isset($_POST['send_message'])) {
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $subject = trim($_POST['subject'] ?? '');
-    $message = trim($_POST['message'] ?? '');
-
-    $nameRegex = "/^[\p{L}\s]{2,50}$/u";
-    $emailRegex = "/^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,}$/";
-
-    if (!preg_match($nameRegex, $name)) {
-        $error = "Emri nuk eshte valid!";
-    } elseif (!preg_match($emailRegex, $email)) {
-        $error = "Email-i nuk eshte valid!";
-    } elseif (strlen($subject) < 3) {
-        $error = "Subject duhet te kete se paku 3 karaktere!";
-    } elseif (strlen($message) < 10) {
-        $error = "Mesazhi duhet te kete se paku 10 karaktere!";
-    } else {
-        setcookie("contact_name", $name, time() + (86400 * 30), "/");
-        setcookie("contact_email", $email, time() + (86400 * 30), "/");
-        $success = "Mesazhi u dergua me sukses!";
-    }
+if (empty($_SESSION['contact_csrf_token'])) {
+    $_SESSION['contact_csrf_token'] = bin2hex(random_bytes(32));
 }
-?>
 
-<!DOCTYPE html>
-<html lang="sq">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kontakt - CarMarketPlace</title>
-    <link rel="stylesheet" href="Style/style.css?v=3">
-    <link rel="stylesheet" href="Style/contact.css?v=2">
-</head>
-<body>
+function cleanHeaderValue(string $value): string {
+    return trim(preg_replace('/[\r\n]+/', ' ', $value));
+}
 
-<?php require "Includes/header.php"; ?>
+function ensureContactMessagesTable(PDO $pdo): void {
+    $sql = "
+        CREATE TABLE IF NOT EXISTS contact_messages (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NULL,
+            name VARCHAR(100) NOT NULL,
+            email VARCHAR(160) NOT NULL,
+            subject VARCHAR(200) NOT NULL,
+            message TEXT NOT NULL,
+            email_sent TINYINT(1) NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT fk_contact_messages_user
+                FOREIGN KEY (user_id) REFERENCES users(id)
+                ON DELETE SET NULL
+                ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ";
 
-<section class="contact-hero">
-    <div class="contact-hero-text">
-        <span>WE'D LOVE TO HEAR FROM YOU</span>
-        <h1>Contact Us</h1>
-        <p>Have a question or need help? Fill out the form and our team will get back to you as soon as possible.</p>
-    </div>
-</section>
+    $pdo->exec($sql);
+}
 
-<section class="contact-section">
-    <div class="contact-form-box">
-        <h2>Send Us a Message</h2>
+function loadMailConfig(): array {
+    $defaultConfig = [
+        'enabled' => true,
+        'to_email' => 'carmarketplace@gmail.com',
+        'to_name' => 'CarMarketplace Team',
+        'from_email' => 'no-reply@carmarketplace.local',
+        'from_name' => 'CarMarketplace Website',
+        'smtp' => [
+            'enabled' => false,
+            'host' => '',
+            'username' => '',
+            'password' => '',
+            'port' => 587,
+            'encryption' => 'tls'
+        ]
+    ];
 
-        <?php if ($error): ?>
-            <div class="alert error"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
-        <?php endif; ?>
+    $configPath = __DIR__ . "/config/mail.php";
+    if (is_file($configPath)) {
+        $customConfig = require $configPath;
+        if (is_array($customConfig)) {
+            $defaultConfig = array_replace_recursive($defaultConfig, $customConfig);
+        }
+    }
 
-        <?php if ($success): ?>
-            <div class="alert success"><?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></div>
-        <?php endif; ?>
+    return $defaultConfig;
+}
 
-        <form method="POST">
-            <label>Full Name</label>
-            <input type="text" name="name" placeholder="Your name"
-                   value="<?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>" required>
+function buildContactEmailBody(string $name, string $email, string $subject, string $message): string {
+    return "Mesazh i ri nga forma Contact - CarMarketplace\n\n" .
+        "Emri: " . $name . "\n" .
+        "Email: " . $email . "\n" .
+        "Subject: " . $subject . "\n\n" .
+        "Mesazhi:\n" . $message . "\n\n" .
+        "Data: " . date('Y-m-d H:i:s') . "\n";
+}
 
-            <label>Email Address</label>
-            <input type="email" name="email" placeholder="Your email"
-                   value="<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>" required>
+function sendContactEmail(string $name, string $email, string $subject, string $message): bool {
+    $mailConfig = loadMailConfig();
 
-            <label>Subject</label>
-            <input type="text" name="subject" placeholder="How can we help?" required>
+    if (empty($mailConfig['enabled'])) {
+        return false;
+    }
 
-            <label>Message</label>
-            <textarea name="message" placeholder="Write your message here..." required></textarea>
+    $toEmail = filter_var($mailConfig['to_email'], FILTER_VALIDATE_EMAIL)
+        ? $mailConfig['to_email']
+        : 'carmarketplace@gmail.com';
 
-            <button type="submit" name="send_message">Send Message</button>
-        </form>
-    </div>
+    $fromEmail = filter_var($mailConfig['from_email'], FILTER_VALIDATE_EMAIL)
+        ? $mailConfig['from_email']
+        : $toEmail;
 
-    <div class="contact-info-box">
-        <h2>Get in Touch</h2>
+    $subjectLine = "CarMarketplace Contact: " . cleanHeaderValue($subject);
+    $body = buildContactEmailBody($name, $email, $subject, $message);
 
-        <div class="info-item">
-            <div class="icon">AD</div>
-            <div>
-                <h3>Address</h3>
-                <p>Rr. Skenderbeu, Prishtine, Kosove</p>
-            </div>
-        </div>
-
-        <div class="info-item">
-            <div class="icon">PH</div>
-            <div>
-                <h3>Phone</h3>
-                <p>+383 44 123 456</p>
-            </div>
-        </div>
-
-        <div class="info-item">
-            <div class="icon">@</div>
-            <div>
-                <h3>Email</h3>
-                <p>info@carmarketplace.com</p>
-            </div>
-        </div>
-
-        <div class="info-item">
-            <div class="icon">HR</div>
-            <div>
-                <h3>Working Hours</h3>
-                <p>Mon - Fri: 09:00 - 18:00</p>
-                <p>Sat: 10:00 - 15:00</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="contact-cta">
-    <div>
-        <h2>Looking for your dream car?</h2>
-        <p>Check out our latest listings.</p>
-    </div>
-    <a href="models.php">Browse Cars</a>
-</section>
-
-<?php require "Includes/footer.php"; ?>
-
-</body>
-</html>
+    $autoloadPath = __DIR__ . "/vendor/autoload.php";
+    $smtp = $mailConfig['smtp'] ?? [];
