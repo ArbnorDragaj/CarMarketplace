@@ -165,6 +165,8 @@ if (isset($_GET['success']) && $_GET['success'] === 'added') {
     $success = "Statusi i vetures u ndryshua me sukses.";
 } elseif (isset($_GET['success']) && $_GET['success'] === 'deleted') {
     $success = "Vetura u fshi me sukses.";
+} elseif (isset($_GET['success']) && $_GET['success'] === 'edited') {
+    $success = "Vetura u perditesua me sukses.";
 }
 
 try {
@@ -326,7 +328,9 @@ try {
 
                                 <td>
                                     <div class="action-buttons">
-                                        <form method="POST" action="admin.php" style="display:inline;">
+                                        <a href="edit_car.php?id=<?php echo e($car['id']); ?>" class="action-btn edit-btn">Edito</a>
+
+                                        <form method="POST" action="admin.php" class="toggle-car-form" style="display:inline;">
                                             <input type="hidden" name="car_id" value="<?php echo e($car['id']); ?>">
                                         <button
                                             type="submit"
@@ -339,7 +343,7 @@ try {
                                         </button>
                                         </form>
 
-                                        <form method="POST" action="admin.php" style="display:inline;" onsubmit="return confirm('A jeni i sigurt qe doni ta fshini kete veture?');">
+                                        <form method="POST" action="admin.php" class="delete-car-form" data-confirm="A jeni i sigurt qe doni ta fshini kete veture?" style="display:inline;">
                                             <input type="hidden" name="car_id" value="<?php echo e($car['id']); ?>">
                                         <button
                                             type="submit"
@@ -364,6 +368,8 @@ try {
 </section>
 
 <?php include 'Includes/footer.php'; ?>
+
+<script src="Script/admin.js"></script>
 
 </body>
 </html>
