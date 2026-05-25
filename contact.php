@@ -38,8 +38,8 @@ if (isset($_POST['send_message'])) {
 require "Includes/header.php";
 ?>
 
-<link rel="stylesheet" href="style/contact.css">
-<link rel="stylesheet" href="style/style.css">
+<link rel="stylesheet" href="Style/contact.css">
+<link rel="stylesheet" href="Style/style.css">
 
 <section class="contact-hero">
     <div class="contact-hero-text">
@@ -123,7 +123,7 @@ require "Includes/header.php";
         <h2>Looking for your dream car?</h2>
         <p>Check out our latest listings.</p>
     </div>
-    <a href="sherbimet.php">Browse Cars</a>
+    <a href="models.php">Browse Cars</a>
 </section>
 
 <?php require "Includes/footer.php"; ?>
