@@ -169,3 +169,74 @@ function validateContactForm(string $name, string $email, string $subject, strin
 
     return "";
 }
+
+
+try {
+    ensureContactMessagesTable($pdo);
+} catch (PDOException $e) {
+    $error = "Nuk mund te pergatitet tabela e mesazheve. Provoni perseri me vone.";
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
+    $token = $_POST['csrf_token'] ?? '';
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $subject = trim($_POST['subject'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+
+    if (!hash_equals($_SESSION['contact_csrf_token'], $token)) {
+        $error = "Kerkesa nuk eshte valide. Rifresko faqen dhe provo perseri.";
+    } else {
+        $error = validateContactForm($name, $email, $subject, $message);
+    }
+
+    if ($error === "") {
+        try {
+            $emailWasSent = sendContactEmail($name, $email, $subject, $message);
+            $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
+
+            $stmt = $pdo->prepare(
+                "INSERT INTO contact_messages (user_id, name, email, subject, message, email_sent)
+                 VALUES (?, ?, ?, ?, ?, ?)"
+            );
+
+            $stmt->execute([
+                $userId,
+                $name,
+                $email,
+                $subject,
+                $message,
+                $emailWasSent ? 1 : 0
+            ]);
+
+            setcookie("contact_name", $name, time() + (86400 * 30), "/");
+            setcookie("contact_email", $email, time() + (86400 * 30), "/");
+
+            $_SESSION['contact_csrf_token'] = bin2hex(random_bytes(32));
+
+            $success = $emailWasSent
+                ? "Mesazhi u ruajt ne databaze dhe email-i u dergua me sukses."
+                : "Mesazhi u ruajt ne databaze. Per dergim real email-i, konfiguroni SMTP/mail ne XAMPP.";
+
+            $subject = "";
+            $message = "";
+        } catch (PDOException $e) {
+            $error = "Ndodhi nje gabim gjate ruajtjes se mesazhit. Provoni perseri.";
+        } catch (Throwable $e) {
+            $error = "Ndodhi nje gabim i papritur. Provoni perseri.";
+        }
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakt - CarMarketPlace</title>
+    <link rel="stylesheet" href="Style/style.css?v=3">
+    <link rel="stylesheet" href="Style/contact.css?v=3">
+    <script src="Script/contact.js?v=3" defer></script>
+</head>
+<body>
