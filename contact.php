@@ -101,3 +101,71 @@ function sendContactEmail(string $name, string $email, string $subject, string $
 
     $autoloadPath = __DIR__ . "/vendor/autoload.php";
     $smtp = $mailConfig['smtp'] ?? [];
+
+
+    // Nese projekti ka PHPMailer te instaluar, perdoret SMTP.
+    if (!empty($smtp['enabled']) && is_file($autoloadPath)) {
+        try {
+            require_once $autoloadPath;
+
+            if (class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
+                $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+
+                $mail->isSMTP();
+                $mail->Host = $smtp['host'] ?? '';
+                $mail->SMTPAuth = true;
+                $mail->Username = $smtp['username'] ?? '';
+                $mail->Password = $smtp['password'] ?? '';
+                $mail->Port = (int)($smtp['port'] ?? 587);
+
+                $mail->SMTPSecure = ($smtp['encryption'] ?? 'tls') === 'ssl'
+                    ? \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS
+                    : \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+
+                $mail->CharSet = 'UTF-8';
+                $mail->setFrom($fromEmail, $mailConfig['from_name'] ?? 'CarMarketplace Website');
+                $mail->addAddress($toEmail, $mailConfig['to_name'] ?? 'CarMarketplace Team');
+                $mail->addReplyTo($email, $name);
+                $mail->Subject = $subjectLine;
+                $mail->Body = $body;
+
+                return $mail->send();
+            }
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
+
+    // Fallback me funksionin standard mail().
+    // Ne XAMPP zakonisht kerkon konfigurim SMTP.
+    $headers = [
+        "MIME-Version: 1.0",
+        "Content-Type: text/plain; charset=UTF-8",
+        "From: " . cleanHeaderValue($mailConfig['from_name'] ?? 'CarMarketplace Website') . " <" . $fromEmail . ">",
+        "Reply-To: " . cleanHeaderValue($name) . " <" . $email . ">"
+    ];
+
+    return @mail($toEmail, $subjectLine, $body, implode("\r\n", $headers));
+}
+
+function validateContactForm(string $name, string $email, string $subject, string $message): string {
+    $nameRegex = "/^[\p{L}\s'\-]{2,70}$/u";
+
+    if (!preg_match($nameRegex, $name)) {
+        return "Emri duhet te kete 2-70 karaktere dhe te permbaje vetem shkronja.";
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Email-i nuk eshte valid.";
+    }
+
+    if (strlen($subject) < 3 || strlen($subject) > 120) {
+        return "Subject duhet te kete 3-120 karaktere.";
+    }
+
+    if (strlen($message) < 10 || strlen($message) > 2000) {
+        return "Mesazhi duhet te kete 10-2000 karaktere.";
+    }
+
+    return "";
+}
