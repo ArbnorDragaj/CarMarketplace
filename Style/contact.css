@@ -1,4 +1,4 @@
-.contact-hero {
+contact-hero {
   min-height: 460px;
   background:
     linear-gradient(rgba(0, 0, 0, 0.64), rgba(0, 0, 0, 0.76)),
@@ -192,6 +192,12 @@
   background: white;
   color: #e70909;
   transform: translateY(-2px);
+}
+
+.form-note {
+  margin: -12px 0 20px;
+  color: #d1d5db;
+  line-height: 1.5;
 }
 
 @media (max-width: 900px) {

@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS cars (
     UNIQUE KEY unique_car (brand, model, year)
 );
 
+
 INSERT IGNORE INTO users (username, email, password, role) VALUES
 ('admin', 'admin@carmarketplace.local', '$2y$10$1E0s0iFUhMe2DMr339FVMOkrqvwHQJl0Fs1VLFdjqrop7Zxx4/EJO', 'admin');
 
@@ -54,3 +55,18 @@ INSERT IGNORE INTO cars (user_id, brand, model, year, price, fuel, body_type, im
 (NULL, 'Tesla', 'Model S', 2023, 90000.00, 'Electric', 'Sedan', 'img/tesla-sedan.jpg', 'active'),
 (NULL, 'Tesla', 'Roadster', 2022, 200000.00, 'Electric', 'Sport', 'img/tesla-sport.jpg', 'active'),
 (NULL, 'Tesla', 'Model X', 2023, 110000.00, 'Electric', 'SUV', 'img/tesla-suv.jpg', 'active');
+
+CREATE TABLE IF NOT EXISTS contact_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(160) NOT NULL,
+    subject VARCHAR(200) NOT NULL,
+    message TEXT NOT NULL,
+    email_sent TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_contact_messages_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
