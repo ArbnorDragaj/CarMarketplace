@@ -34,8 +34,8 @@ if (!isset($_SESSION['user'])) {
             <ul>
                 <li><a href="index.php">Ballina</a></li>
                 <li><a href="rreth-nesh.php">Rreth Nesh</a></li>
-                <li><a href="sherbimet.php">Shërbimet</a></li>
-                <li><a href="kontakti.php">Kontakti</a></li>
+                <li><a href="models.php">Shërbimet</a></li>
+                <li><a href="contact.php">Kontakti</a></li>
                 <li><a href="blog.php" class="blog">Blog</a></li>
             </ul>
         </nav>
@@ -46,7 +46,7 @@ if (!isset($_SESSION['user'])) {
 <br>
 Quality, Guarantee, <strong>Stability</strong> with Us
 </p>
-<button class="btn"><a href="models.php">Eksploro</a></button>
+<a class="btn" href="models.php">Eksploro</a>
 <br>
 <br>
 <br>

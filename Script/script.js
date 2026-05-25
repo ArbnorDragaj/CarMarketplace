@@ -8,8 +8,8 @@ const headerHTML = `
             <ul>
                 <li><a href="index.php">Ballina</a></li>
                 <li><a href="rreth-nesh.php">Rreth Nesh</a></li>
-                <li><a href="sherbimet.php">Shërbimet</a></li>
-                <li><a href="kontakti.php">Kontakti</a></li>
+                <li><a href="models.php">Shërbimet</a></li>
+                <li><a href="contact.php">Kontakti</a></li>
                 <li><a href="blog.php" class="blog">Blog</a></li>
             </ul>
         </nav>
