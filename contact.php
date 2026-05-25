@@ -1,5 +1,5 @@
 <?php
-$site_name = "CarMarketplace";
+$site_name = "CarMarketPlace";
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -12,26 +12,26 @@ $success = "";
 $error = "";
 
 if (isset($_POST['send_message'])) {
-    $name = trim($_POST['name']);
-    $email = trim($_POST['email']);
-    $subject = trim($_POST['subject']);
-    $message = trim($_POST['message']);
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $subject = trim($_POST['subject'] ?? '');
+    $message = trim($_POST['message'] ?? '');
 
-    $nameRegex = "/^[a-zA-ZëËçÇ\s]{2,50}$/";
+    $nameRegex = "/^[\p{L}\s]{2,50}$/u";
     $emailRegex = "/^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,}$/";
 
     if (!preg_match($nameRegex, $name)) {
-        $error = "Emri nuk është valid!";
+        $error = "Emri nuk eshte valid!";
     } elseif (!preg_match($emailRegex, $email)) {
-        $error = "Email-i nuk është valid!";
+        $error = "Email-i nuk eshte valid!";
     } elseif (strlen($subject) < 3) {
-        $error = "Subject duhet të ketë së paku 3 karaktere!";
+        $error = "Subject duhet te kete se paku 3 karaktere!";
     } elseif (strlen($message) < 10) {
-        $error = "Mesazhi duhet të ketë së paku 10 karaktere!";
+        $error = "Mesazhi duhet te kete se paku 10 karaktere!";
     } else {
         setcookie("contact_name", $name, time() + (86400 * 30), "/");
         setcookie("contact_email", $email, time() + (86400 * 30), "/");
-        $success = "Mesazhi u dërgua me sukses!";
+        $success = "Mesazhi u dergua me sukses!";
     }
 }
 ?>
@@ -41,20 +41,13 @@ if (isset($_POST['send_message'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kontakti - CarMarketPlace</title>
-    
-    <link rel="stylesheet" href="Style/contact.css">
-    <?php include "Includes/header.php"; ?>
-        <link rel="stylesheet" href="Style/style.css">
-
+    <title>Kontakt - CarMarketPlace</title>
+    <link rel="stylesheet" href="Style/style.css?v=3">
+    <link rel="stylesheet" href="Style/contact.css?v=2">
 </head>
 <body>
 
-<?php  require "Includes/header.php";
-?>
-
-<link rel="stylesheet" href="style/contact.css">
-<link rel="stylesheet" href="style/style.css">
+<?php require "Includes/header.php"; ?>
 
 <section class="contact-hero">
     <div class="contact-hero-text">
@@ -69,21 +62,21 @@ if (isset($_POST['send_message'])) {
         <h2>Send Us a Message</h2>
 
         <?php if ($error): ?>
-            <div class="alert error"><?php echo htmlspecialchars($error); ?></div>
+            <div class="alert error"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
         <?php endif; ?>
 
         <?php if ($success): ?>
-            <div class="alert success"><?php echo htmlspecialchars($success); ?></div>
+            <div class="alert success"><?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></div>
         <?php endif; ?>
 
         <form method="POST">
             <label>Full Name</label>
             <input type="text" name="name" placeholder="Your name"
-                   value="<?php echo htmlspecialchars($name); ?>" required>
+                   value="<?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>" required>
 
             <label>Email Address</label>
             <input type="email" name="email" placeholder="Your email"
-                   value="<?php echo htmlspecialchars($email); ?>" required>
+                   value="<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>" required>
 
             <label>Subject</label>
             <input type="text" name="subject" placeholder="How can we help?" required>
@@ -99,15 +92,15 @@ if (isset($_POST['send_message'])) {
         <h2>Get in Touch</h2>
 
         <div class="info-item">
-            <div class="icon">📍</div>
+            <div class="icon">AD</div>
             <div>
                 <h3>Address</h3>
-                <p>Rr. Skënderbeu, Prishtinë, Kosova</p>
+                <p>Rr. Skenderbeu, Prishtine, Kosove</p>
             </div>
         </div>
 
         <div class="info-item">
-            <div class="icon">📞</div>
+            <div class="icon">PH</div>
             <div>
                 <h3>Phone</h3>
                 <p>+383 44 123 456</p>
@@ -115,7 +108,7 @@ if (isset($_POST['send_message'])) {
         </div>
 
         <div class="info-item">
-            <div class="icon">✉️</div>
+            <div class="icon">@</div>
             <div>
                 <h3>Email</h3>
                 <p>info@carmarketplace.com</p>
@@ -123,7 +116,7 @@ if (isset($_POST['send_message'])) {
         </div>
 
         <div class="info-item">
-            <div class="icon">⏰</div>
+            <div class="icon">HR</div>
             <div>
                 <h3>Working Hours</h3>
                 <p>Mon - Fri: 09:00 - 18:00</p>
@@ -138,9 +131,10 @@ if (isset($_POST['send_message'])) {
         <h2>Looking for your dream car?</h2>
         <p>Check out our latest listings.</p>
     </div>
-    <a href="sherbimet.php">Browse Cars</a>
+    <a href="models.php">Browse Cars</a>
 </section>
-<script src="contact.js"></script>
-<?php include "Includes/footer.php"; ?>
 
 <?php require "Includes/footer.php"; ?>
+
+</body>
+</html>

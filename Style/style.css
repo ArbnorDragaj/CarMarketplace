@@ -32,6 +32,11 @@
   transition: 0.3s ease;
 }
 
+.logo h1 {
+  margin: 0;
+  line-height: 1;
+}
+
 .logo a:hover {
   color: #ff2d2d;
 }
@@ -217,12 +222,11 @@
 /* footer style */
 
 .site-footer {
-  background: rgba(0, 0, 0, 0.18);
+  background: black;
   color: #f5f5f5;
   padding: 40px 0 24px;
   margin-top: 60px;
   position: relative;
-  
 }
 
 .footer-inner {

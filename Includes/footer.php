@@ -79,8 +79,8 @@
             <ul class="footer-list">
                 <li><a href="index.php">Ballina</a></li>
                 <li><a href="rreth-nesh.php">Rreth Nesh</a></li>
-                <li><a href="sherbimet.php">Shërbimet</a></li>
-                <li><a href="kontakti.php">Kontakti</a></li>
+                <li><a href="models.php">Shërbimet</a></li>
+                <li><a href="contact.php">Kontakti</a></li>
                 <li><a href="blog.php">Blog</a></li>
             </ul>
         </div>
@@ -88,10 +88,10 @@
         <div class="footer-column">
             <h4 class="footer-heading">Shërbimet</h4>
             <ul class="footer-list">
-                <li><a href="sherbimet.php">Blerje veture</a></li>
-                <li><a href="sherbimet.php">Shitje veture</a></li>
-                <li><a href="sherbimet.php">Këshillim për makina</a></li>
-                <li><a href="kontakti.php">Ndihmë dhe përkrahje</a></li>
+                <li><a href="models.php">Blerje veture</a></li>
+                <li><a href="models.php">Shitje veture</a></li>
+                <li><a href="models.php">Këshillim për makina</a></li>
+                <li><a href="contact.php">Ndihmë dhe përkrahje</a></li>
             </ul>
         </div>
 

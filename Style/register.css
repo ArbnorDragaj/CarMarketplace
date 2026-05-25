@@ -1,0 +1,129 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.65)),
+    url("../img/car\ 4.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-card {
+  width: 430px;
+  padding: 40px;
+  background: rgba(10, 18, 28, 0.92);
+  border: 1px solid rgba(255, 200, 0, 0.55);
+  border-radius: 18px;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.65);
+}
+
+.auth-card h1 {
+  text-align: center;
+  color: #f5c400;
+  font-size: 38px;
+  margin-bottom: 30px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 17px 20px;
+  border-radius: 14px;
+  border: 1px solid #263647;
+  background: #07101a;
+  color: #fff;
+  font-size: 17px;
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: #c9d0d8;
+}
+
+.input-group input:focus {
+  border-color: #f5c400;
+}
+
+button {
+  width: 100%;
+  padding: 17px;
+  border: none;
+  border-radius: 14px;
+  background: #f5c400;
+  color: #07101a;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  background: #ffd21a;
+  box-shadow: 0 0 20px rgba(245, 196, 0, 0.45);
+}
+
+.auth-link {
+  text-align: center;
+  color: #d8dde4;
+  margin-top: 22px;
+  font-size: 15px;
+}
+
+.auth-link a {
+  color: #f5c400;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+.message {
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.error {
+  background: rgba(255, 0, 0, 0.15);
+  color: #ff7676;
+  border: 1px solid rgba(255, 0, 0, 0.35);
+}
+
+.success {
+  background: rgba(0, 180, 80, 0.15);
+  color: #7dffad;
+  border: 1px solid rgba(0, 180, 80, 0.35);
+}
+
+@media (max-width: 500px) {
+  .auth-card {
+    width: 90%;
+    padding: 30px 22px;
+  }
+
+  .auth-card h1 {
+    font-size: 32px;
+  }
+}

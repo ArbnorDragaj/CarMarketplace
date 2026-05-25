@@ -3,175 +3,197 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require 'classes/carCL.php';
+require_once "config.php";
 
 $site_name = "CarMarketPlace";
+$error = "";
+$success = "";
 
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit();
 }
 
-if (!isset($_SESSION['role'])) {
-    $_SESSION['role'] = "admin";
-}
-
-if ($_SESSION['role'] !== "admin") {
+if (($_SESSION['role'] ?? '') !== "admin") {
     header("Location: index.php");
     exit();
 }
 
-if (!isset($_SESSION['cars'])) {
-    $_SESSION['cars'] = [
-        [
-            "brand" => "Audi",
-            "model" => "RS7",
-            "fuel" => "Petrol",
-            "type" => "Sedan",
-            "year" => 2023,
-            "price" => 85000,
-            "image" => "img/audi-sedan.png",
-            "status" => "active"
-        ],
-        [
-            "brand" => "Audi",
-            "model" => "R8",
-            "fuel" => "Petrol",
-            "type" => "Sport",
-            "year" => 2022,
-            "price" => 150000,
-            "image" => "img/audi-sport.jpg",
-            "status" => "active"
-        ],
-        [
-            "brand" => "BMW",
-            "model" => "M4",
-            "fuel" => "Petrol",
-            "type" => "Sport",
-            "year" => 2022,
-            "price" => 90000,
-            "image" => "img/bmw-sport.jpg",
-            "status" => "active"
-        ],
-        [
-            "brand" => "Mercedes",
-            "model" => "E-Class",
-            "fuel" => "Petrol",
-            "type" => "Sedan",
-            "year" => 2023,
-            "price" => 60000,
-            "image" => "img/mercedes-sedan.jpg",
-            "status" => "active"
-        ],
-        [
-            "brand" => "Tesla",
-            "model" => "Model S",
-            "fuel" => "Electric",
-            "type" => "Sedan",
-            "year" => 2023,
-            "price" => 90000,
-            "image" => "img/tesla-sedan.jpg",
-            "status" => "active"
-        ]
-    ];
+if (!empty($_SESSION['admin_error'])) {
+    $error = $_SESSION['admin_error'];
+    unset($_SESSION['admin_error']);
 }
 
-if (isset($_POST['add_car'])) {
+if (!empty($_SESSION['admin_success'])) {
+    $success = $_SESSION['admin_success'];
+    unset($_SESSION['admin_success']);
+}
+
+function uploadCarImage($file, &$error) {
+    if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
+        $error = "Ju lutem ngarkoni një foto për veturën.";
+        return null;
+    }
+
+    $uploadDir = __DIR__ . "/uploads/cars/";
+    $publicDir = "uploads/cars/";
+
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $fileName = $file['name'];
+    $fileTmp = $file['tmp_name'];
+    $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+
+    if (!in_array($fileExt, $allowedExtensions, true)) {
+        $error = "Lejohen vetëm fotot JPG, JPEG, PNG ose WEBP.";
+        return null;
+    }
+
+    if ($file['size'] > 5 * 1024 * 1024) {
+        $error = "Foto është shumë e madhe. Maksimumi 5MB.";
+        return null;
+    }
+
+    $newFileName = uniqid("car_", true) . "." . $fileExt;
+    $destination = $uploadDir . $newFileName;
+
+    if (!move_uploaded_file($fileTmp, $destination)) {
+        $error = "Foto nuk mund të ruhet. Provoni përsëri.";
+        return null;
+    }
+
+    return $publicDir . $newFileName;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_car_status'])) {
+    $carId = filter_input(INPUT_POST, 'car_id', FILTER_VALIDATE_INT);
+
+    if (!$carId) {
+        $error = "Vetura e zgjedhur nuk eshte valide.";
+    } else {
+        try {
+            $stmt = $pdo->prepare("SELECT status FROM cars WHERE id = ? LIMIT 1");
+            $stmt->execute([$carId]);
+            $car = $stmt->fetch();
+
+            if (!$car) {
+                $error = "Vetura nuk u gjet.";
+            } else {
+                $newStatus = $car['status'] === 'active' ? 'inactive' : 'active';
+                $stmt = $pdo->prepare("UPDATE cars SET status = ? WHERE id = ?");
+                $stmt->execute([$newStatus, $carId]);
+
+                header("Location: admin.php?success=status");
+                exit();
+            }
+        } catch (PDOException $e) {
+            $error = "Statusi i vetures nuk mund te ndryshohet.";
+        }
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_car'])) {
+    $carId = filter_input(INPUT_POST, 'car_id', FILTER_VALIDATE_INT);
+
+    if (!$carId) {
+        $error = "Vetura e zgjedhur nuk eshte valide.";
+    } else {
+        try {
+            $stmt = $pdo->prepare("SELECT image FROM cars WHERE id = ? LIMIT 1");
+            $stmt->execute([$carId]);
+            $car = $stmt->fetch();
+
+            if (!$car) {
+                $error = "Vetura nuk u gjet.";
+            } else {
+                $stmt = $pdo->prepare("DELETE FROM cars WHERE id = ?");
+                $stmt->execute([$carId]);
+
+                if (!empty($car['image']) && strpos($car['image'], 'uploads/cars/') === 0) {
+                    $imagePath = __DIR__ . "/" . $car['image'];
+                    if (is_file($imagePath)) {
+                        unlink($imagePath);
+                    }
+                }
+
+                header("Location: admin.php?success=deleted");
+                exit();
+            }
+        } catch (PDOException $e) {
+            $error = "Vetura nuk mund te fshihet.";
+        }
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_car'])) {
     $brand = trim($_POST['brand'] ?? '');
     $model = trim($_POST['model'] ?? '');
     $fuel = trim($_POST['fuel'] ?? '');
-    $type = trim($_POST['type'] ?? '');
+    $bodyType = trim($_POST['type'] ?? '');
     $year = trim($_POST['year'] ?? '');
     $price = trim($_POST['price'] ?? '');
 
-    $imagePath = '';
+    if ($brand === '' || $model === '' || $fuel === '' || $bodyType === '' || $year === '' || $price === '') {
+        $error = "Ju lutem plotësoni të gjitha fushat.";
+    } elseif (!filter_var($year, FILTER_VALIDATE_INT) || (int)$year < 1900 || (int)$year > ((int)date('Y') + 1)) {
+        $error = "Viti i veturës nuk është valid.";
+    } elseif (!is_numeric($price) || (float)$price <= 0) {
+        $error = "Çmimi duhet të jetë numër pozitiv.";
+    } else {
+        $imagePath = uploadCarImage($_FILES['car_image'] ?? null, $error);
 
-    if (isset($_FILES['car_image']) && $_FILES['car_image']['error'] === 0) {
-        $uploadDir = "uploads/cars/";
+        if ($imagePath !== null) {
+            try {
+                $stmt = $pdo->prepare("\n                    INSERT INTO cars (user_id, brand, model, year, price, fuel, body_type, image, status)\n                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active')\n                ");
 
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
+                $stmt->execute([
+                    $_SESSION['user_id'] ?? null,
+                    $brand,
+                    $model,
+                    (int)$year,
+                    (float)$price,
+                    $fuel,
+                    $bodyType,
+                    $imagePath,
+                ]);
+
+                header("Location: admin.php?success=added");
+                exit();
+            } catch (PDOException $e) {
+                $error = "Vetura nuk mund të ruhet në databazë.";
+            }
         }
-
-        $fileName = $_FILES['car_image']['name'];
-        $fileTmp = $_FILES['car_image']['tmp_name'];
-        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-
-        $allowedTypes = ['jpg', 'jpeg', 'png', 'webp'];
-
-        if (in_array($fileExt, $allowedTypes)) {
-            $newFileName = uniqid("car_", true) . "." . $fileExt;
-            $imagePath = $uploadDir . $newFileName;
-            move_uploaded_file($fileTmp, $imagePath);
-        }
-    }
-
-    if (
-        $brand !== '' &&
-        $model !== '' &&
-        $fuel !== '' &&
-        $type !== '' &&
-        $year !== '' &&
-        $price !== '' &&
-        $imagePath !== ''
-    ) {
-        $_SESSION['cars'][] = [
-            "brand" => $brand,
-            "model" => $model,
-            "fuel" => $fuel,
-            "type" => $type,
-            "year" => $year,
-            "price" => $price,
-            "image" => $imagePath,
-            "status" => "active"
-        ];
-
-        header("Location: admin.php");
-        exit();
     }
 }
 
-if (isset($_GET['deactivate'])) {
-    $id = $_GET['deactivate'];
-
-    if (isset($_SESSION['cars'][$id])) {
-        $_SESSION['cars'][$id]['status'] = "inactive";
-    }
-
-    header("Location: admin.php");
-    exit();
+if (isset($_GET['success']) && $_GET['success'] === 'added') {
+    $success = "Vetura u shtua me sukses.";
+} elseif (isset($_GET['success']) && $_GET['success'] === 'status') {
+    $success = "Statusi i vetures u ndryshua me sukses.";
+} elseif (isset($_GET['success']) && $_GET['success'] === 'deleted') {
+    $success = "Vetura u fshi me sukses.";
+} elseif (isset($_GET['success']) && $_GET['success'] === 'edited') {
+    $success = "Vetura u perditesua me sukses.";
 }
 
-if (isset($_GET['activate'])) {
-    $id = $_GET['activate'];
+try {
+    $totalCars = (int)$pdo->query("SELECT COUNT(*) FROM cars")->fetchColumn();
+    $activeCars = (int)$pdo->query("SELECT COUNT(*) FROM cars WHERE status = 'active'")->fetchColumn();
+    $inactiveCars = (int)$pdo->query("SELECT COUNT(*) FROM cars WHERE status = 'inactive'")->fetchColumn();
 
-    if (isset($_SESSION['cars'][$id])) {
-        $_SESSION['cars'][$id]['status'] = "active";
-    }
-
-    header("Location: admin.php");
-    exit();
+    $stmt = $pdo->prepare("SELECT id, brand, model, fuel, body_type, year, price, image, status FROM cars ORDER BY id DESC");
+    $stmt->execute();
+    $cars = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $cars = [];
+    $totalCars = 0;
+    $activeCars = 0;
+    $inactiveCars = 0;
+    $error = "Nuk mund të lexohen veturat nga databaza.";
 }
-
-if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
-
-    if (isset($_SESSION['cars'][$id])) {
-        unset($_SESSION['cars'][$id]);
-        $_SESSION['cars'] = array_values($_SESSION['cars']);
-    }
-
-    header("Location: admin.php");
-    exit();
-}
-
-$totalCars = count($_SESSION['cars']);
-
-$activeCars = count(array_filter($_SESSION['cars'], function ($car) {
-    return $car['status'] === 'active';
-}));
-
-$inactiveCars = $totalCars - $activeCars;
 ?>
 
 <!DOCTYPE html>
@@ -179,7 +201,7 @@ $inactiveCars = $totalCars - $activeCars;
 <head>
     <meta charset="UTF-8">
     <title>Admin Panel - CarMarketPlace</title>
-    <link rel="stylesheet" href="Style/style.css">
+    <link rel="stylesheet" href="Style/style.css?v=3">
     <link rel="stylesheet" href="Style/admin.css">
 </head>
 <body>
@@ -197,20 +219,28 @@ $inactiveCars = $totalCars - $activeCars;
             </div>
         </div>
 
+        <?php if (!empty($error)): ?>
+            <div class="admin-message error-message"><?php echo e($error); ?></div>
+        <?php endif; ?>
+
+        <?php if (!empty($success)): ?>
+            <div class="admin-message success-message"><?php echo e($success); ?></div>
+        <?php endif; ?>
+
         <div class="admin-stats">
             <div class="stat-card">
                 <span>Total vetura</span>
-                <h3><?php echo $totalCars; ?></h3>
+                <h3 id="totalCars"><?php echo e($totalCars); ?></h3>
             </div>
 
             <div class="stat-card">
                 <span>Veturat aktive</span>
-                <h3><?php echo $activeCars; ?></h3>
+                <h3 id="activeCars"><?php echo e($activeCars); ?></h3>
             </div>
 
             <div class="stat-card">
                 <span>Joaktive</span>
-                <h3><?php echo $inactiveCars; ?></h3>
+                <h3 id="inactiveCars"><?php echo e($inactiveCars); ?></h3>
             </div>
         </div>
 
@@ -219,7 +249,7 @@ $inactiveCars = $totalCars - $activeCars;
             <div class="admin-form-card">
                 <h2>Shto veturë të re</h2>
 
-                <form method="POST" class="car-form" enctype="multipart/form-data">
+                <form method="POST" action="add_car.php" class="car-form" enctype="multipart/form-data">
                     <div class="form-row">
                         <input type="text" name="brand" placeholder="Marka p.sh. Audi" required>
                         <input type="text" name="model" placeholder="Modeli p.sh. RS7" required>
@@ -231,8 +261,8 @@ $inactiveCars = $totalCars - $activeCars;
                     </div>
 
                     <div class="form-row">
-                        <input type="number" name="year" placeholder="Viti p.sh. 2023" required>
-                        <input type="number" name="price" placeholder="Çmimi p.sh. 85000" required>
+                        <input type="number" name="year" placeholder="Viti p.sh. 2023" min="1900" max="<?php echo date('Y') + 1; ?>" required>
+                        <input type="number" name="price" placeholder="Çmimi p.sh. 85000" min="1" step="0.01" required>
                     </div>
 
                     <div class="upload-box">
@@ -248,7 +278,7 @@ $inactiveCars = $totalCars - $activeCars;
                 <h2>Udhëzim</h2>
                 <p>
                     Plotëso të dhënat e veturës dhe ngarko foton nga kompjuteri.
-                    Fotot ruhen automatikisht në folderin <strong>uploads/cars/</strong>.
+                    Fotot ruhen automatikisht në folderin <strong>uploads/cars/</strong> dhe të dhënat ruhen në MySQL.
                 </p>
             </div>
 
@@ -257,7 +287,7 @@ $inactiveCars = $totalCars - $activeCars;
         <div class="cars-table-card">
             <div class="table-header">
                 <h2>Veturat në sistem</h2>
-                <p>Këtu shfaqen të gjitha veturat aktive dhe joaktive.</p>
+                <p>Këtu shfaqen të gjitha veturat aktive dhe joaktive nga databaza.</p>
             </div>
 
             <div class="cars-table-wrapper">
@@ -275,48 +305,65 @@ $inactiveCars = $totalCars - $activeCars;
                     </thead>
 
                     <tbody>
-                        <?php foreach ($_SESSION['cars'] as $index => $car): ?>
+                        <?php if (empty($cars)): ?>
                             <tr>
+                                <td colspan="7">Nuk ka vetura të regjistruara.</td>
+                            </tr>
+                        <?php endif; ?>
+
+                        <?php foreach ($cars as $car): ?>
+                            <tr id="car-row-<?php echo e($car['id']); ?>">
                                 <td>
-                                    <img src="<?php echo htmlspecialchars($car['image']); ?>" alt="Car" class="car-admin-img">
+                                    <img src="<?php echo e($car['image'] ?: 'img/default-car.jpg'); ?>" alt="Car" class="car-admin-img">
                                 </td>
 
                                 <td>
                                     <strong>
-                                        <?php echo htmlspecialchars($car['brand'] . " " . $car['model']); ?>
+                                        <?php echo e($car['brand'] . " " . $car['model']); ?>
                                     </strong>
-                                    <span><?php echo htmlspecialchars($car['fuel']); ?></span>
+                                    <span><?php echo e($car['fuel']); ?></span>
                                 </td>
 
-                                <td><?php echo htmlspecialchars($car['type']); ?></td>
+                                <td><?php echo e($car['body_type']); ?></td>
 
-                                <td><?php echo htmlspecialchars($car['year']); ?></td>
+                                <td><?php echo e($car['year']); ?></td>
 
-                                <td>€<?php echo number_format($car['price']); ?></td>
+                                <td>€<?php echo e(number_format((float)$car['price'], 0)); ?></td>
 
                                 <td>
-                                    <?php if ($car['status'] === 'active'): ?>
-                                        <span class="status active-status">Aktive</span>
-                                    <?php else: ?>
-                                        <span class="status inactive-status">Joaktive</span>
-                                    <?php endif; ?>
+                                    <span id="status-<?php echo e($car['id']); ?>" class="status <?php echo $car['status'] === 'active' ? 'active-status' : 'inactive-status'; ?>">
+                                        <?php echo $car['status'] === 'active' ? 'Aktive' : 'Joaktive'; ?>
+                                    </span>
                                 </td>
 
                                 <td>
                                     <div class="action-buttons">
-                                        <?php if ($car['status'] === 'active'): ?>
-                                            <a href="admin.php?deactivate=<?php echo $index; ?>" class="action-btn deactivate-btn">
-                                                Çaktivizo
-                                            </a>
-                                        <?php else: ?>
-                                            <a href="admin.php?activate=<?php echo $index; ?>" class="action-btn activate-btn">
-                                                Aktivizo
-                                            </a>
-                                        <?php endif; ?>
+                                        <a href="edit_car.php?id=<?php echo e($car['id']); ?>" class="action-btn edit-btn">Edito</a>
 
-                                        <a href="admin.php?delete=<?php echo $index; ?>" class="action-btn delete-btn" onclick="return confirm('A je i sigurt që dëshiron ta fshish këtë veturë?');">
+                                        <form method="POST" action="admin.php" class="toggle-car-form" style="display:inline;">
+                                            <input type="hidden" name="car_id" value="<?php echo e($car['id']); ?>">
+                                        <button
+                                            type="submit"
+                                            name="toggle_car_status"
+                                            class="action-btn <?php echo $car['status'] === 'active' ? 'deactivate-btn' : 'activate-btn'; ?> toggle-status-btn"
+                                            data-id="<?php echo e($car['id']); ?>"
+                                            data-status="<?php echo e($car['status']); ?>"
+                                        >
+                                            <?php echo $car['status'] === 'active' ? 'Çaktivizo' : 'Aktivizo'; ?>
+                                        </button>
+                                        </form>
+
+                                        <form method="POST" action="delete_car.php" class="delete-car-form" data-confirm="A jeni i sigurt qe doni ta fshini kete veture?" style="display:inline;">
+                                            <input type="hidden" name="car_id" value="<?php echo e($car['id']); ?>">
+                                        <button
+                                            type="submit"
+                                            name="delete_car"
+                                            class="action-btn delete-btn delete-car-btn"
+                                            data-id="<?php echo e($car['id']); ?>"
+                                        >
                                             Fshij
-                                        </a>
+                                        </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -331,6 +378,8 @@ $inactiveCars = $totalCars - $activeCars;
 </section>
 
 <?php include 'Includes/footer.php'; ?>
+
+<script src="Script/admin.js"></script>
 
 </body>
 </html>

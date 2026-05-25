@@ -1,16 +1,9 @@
 <?php
-// Mund të shtosh variabla këtu për të ndryshuar titullin e faqes në mënyrë dinamike
 $site_name = "CarMarketPlace";
 
-
-session_start();
-
-
-if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
-    exit();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="sq">
@@ -18,40 +11,60 @@ if (!isset($_SESSION['user'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title ?? 'CarMarketPlace'; ?></title>
-    <link rel="stylesheet" href="Style/index.css">
-    <link rel="stylesheet" href="Style/style.css">
-
+    <link rel="stylesheet" href="Style/style.css?v=3">
+    <link rel="stylesheet" href="Style/index.css?v=2">
 </head>
 <body>
     <?php include 'Includes/header.php'; ?>
 
-<!-- <header class="main-header">
-    <div class="container">
-        <div class="logo">
-            <h1><a href="index.php"><?php echo $site_name; ?></a></h1>
-        </div>
-        <nav class="navbar">
-            <ul>
-                <li><a href="index.php">Ballina</a></li>
-                <li><a href="rreth-nesh.php">Rreth Nesh</a></li>
-                <li><a href="sherbimet.php">Shërbimet</a></li>
-                <li><a href="kontakti.php">Kontakti</a></li>
-                <li><a href="blog.php" class="blog">Blog</a></li>
-            </ul>
-        </nav>
-    </div>
-</header> -->
+    <main class="home-page">
+        <section class="hero-section">
+            <div class="hero-content">
+                <span class="hero-label">Premium car marketplace</span>
+                <h2>Find your <strong>Perfect</strong> car</h2>
+                <p>Quality, guarantee, <strong>stability</strong> with us</p>
 
-<p>Find your <strong>Perfect</strong> car
-<br>
-Quality, Guarantee, <strong>Stability</strong> with Us
-</p>
-<button class="btn"><a href="models.php">Eksploro</a></button>
-<br>
-<br>
-<br>
-<br>
+                <div class="hero-actions">
+                    <a class="btn" href="models.php">Eksploro</a>
+                    <a class="ghost-link" href="contact.php">Kerko keshille</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="client-panel">
+            <div class="client-stat">
+                <span>12+</span>
+                <p>Vetura aktive</p>
+            </div>
+            <div class="client-stat">
+                <span>4</span>
+                <p>Brende premium</p>
+            </div>
+            <div class="client-stat">
+                <span>24h</span>
+                <p>Kontakt i shpejte</p>
+            </div>
+        </section>
+
+        <section class="client-benefits">
+            <article>
+                <span>01</span>
+                <h3>Zgjedhje e qarte</h3>
+                <p>Shiko veturat sipas brendit, tipit dhe karburantit.</p>
+            </article>
+            <article>
+                <span>02</span>
+                <h3>Cmime transparente</h3>
+                <p>Krahaso modelet pa u humbur ne informata te panevojshme.</p>
+            </article>
+            <article>
+                <span>03</span>
+                <h3>Qasje e kontrolluar</h3>
+                <p>Sherbimet hapen pas login-it per pervoje me te sigurt.</p>
+            </article>
+        </section>
+    </main>
 
     <?php include 'Includes/footer.php'; ?>
-
 </body>
+</html>
