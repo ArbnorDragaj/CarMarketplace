@@ -6,7 +6,17 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once "config.php";
 
 $error = "";
+$success = "";
 $username = "";
+
+if (isset($_GET['logged_out'])) {
+    $success = "Jeni shkycur me sukses.";
+}
+
+if (isset($_SESSION['user_id'], $_SESSION['user'])) {
+    header("Location: " . (($_SESSION['role'] ?? '') === 'admin' ? "admin.php" : "index.php"));
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
@@ -21,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
@@ -57,6 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <?php if (!empty($error)): ?>
             <div class="error"><?php echo e($error); ?></div>
+        <?php endif; ?>
+
+        <?php if (!empty($success)): ?>
+            <div class="error" style="color:#7dffad;"><?php echo e($success); ?></div>
         <?php endif; ?>
 
         <form method="post" action="login.php" autocomplete="off">
