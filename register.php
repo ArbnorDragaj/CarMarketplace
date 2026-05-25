@@ -10,6 +10,11 @@ $success = "";
 $username = "";
 $email = "";
 
+if (isset($_SESSION['user_id'], $_SESSION['user'])) {
+    header("Location: index.php");
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
@@ -22,6 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Email nuk është valid.";
     } elseif (strlen($username) < 3) {
         $error = "Username duhet të ketë së paku 3 karaktere.";
+    } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
+        $error = "Username mund te kete vetem shkronja, numra dhe underscore.";
     } elseif (strlen($password) < 6) {
         $error = "Password duhet të ketë së paku 6 karaktere.";
     } elseif ($password !== $confirm_password) {
