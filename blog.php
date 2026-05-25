@@ -1,26 +1,58 @@
 <?php
 session_start();
-require_once "config/db.php";
+// config/db.php
+// Lidhja me databazen MySQL duke perdorur PDO.
+// Provohet fillimisht porti 3306, pastaj 3307.
+
+$host = "127.0.0.1";
+$dbname = "car_marketplace";
+$username = "root";
+$password = "";
+
+$ports = [3306, 3307];
+
+$pdo = null;
+
+foreach ($ports as $port) {
+    try {
+        $pdo = new PDO(
+            "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4",
+            $username,
+            $password,
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false
+            ]
+        );
+
+        break;
+    } catch (PDOException $e) {
+        $pdo = null;
+    }
+}
+
+if (!$pdo) {
+    die("Database connection failed. Please check config/db.php");
+}
+
 
 $categories = ["Sports Car", "Luxury", "Classic", "Electric", "SUV"];
-$erorr="";
+$error = "";
 
-//ketu kontrollojm se a osht useri loged in
-
-if(!isset($_SESSION['user'])){
+// Kontrollon a eshte useri logged in
+if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit();
 }
 
-//krijojm ni funksion i cili na mbron nga XSS
-
-function e($value){
-    return htmlspecialchars((string)$value , ENT_QUOTES ,'UTF-8');
+// Funksion per mbrojtje nga XSS
+function e($value) {
+    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
 }
 
-//kontrollojm a eshte useri admin
-
-function isAdmin(){
+// Kontrollon a eshte admin
+function isAdmin() {
     return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 }
 
@@ -62,269 +94,270 @@ function validatePost($title, $content, $category, $categories) {
 
     return "";
 }
+
+// Upload i fotos
 function uploadImage() {
-    if (empty($_FILES['image']['name'])) return "";
+    if (empty($_FILES['image']['name'])) {
+        return null;
+    }
 
-    $targetDir = "uploads/";
-    if (!is_dir($targetDir)) mkdir($targetDir);
+    $targetDir = "uploads/blog/";
 
-    $fileName = time() . "_" . basename($_FILES["image"]["name"]);
-    $targetFile = $targetDir . $fileName;
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0777, true);
+    }
 
-    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    $allowed = ["jpg", "jpeg", "png", "gif", "webp"];
+    $fileName = basename($_FILES['image']['name']);
     $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-    if (in_array($ext, $allowed)) {
-        move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile);
+    if (!in_array($ext, $allowed, true)) {
+        return null;
+    }
+
+    if ($_FILES['image']['size'] > 3 * 1024 * 1024) {
+        return null;
+    }
+
+    $newName = time() . "_" . rand(1000, 9999) . "." . $ext;
+    $targetFile = $targetDir . $newName;
+
+    if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
         return $targetFile;
     }
 
-    return "";
+    return null;
 }
 
-if (isset($_POST['add_post']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    $imagePath = uploadImage();
+$userId = getCurrentUserId($pdo);
 
-    $posts[] = [
-        "title" => $_POST['title'],
-        "content" => $_POST['content'],
-        "category" => $_POST['category'],
-        "image" => $imagePath,
-        "date" => date("d M Y"),
-        "author" => $_SESSION['user']
-    ];
+// ADD POST
+if (isset($_POST['add_post']) && isAdmin()) {
+    $title = trim($_POST['title'] ?? "");
+    $content = trim($_POST['content'] ?? "");
+    $category = $_POST['category'] ?? "";
 
-    file_put_contents("posts.json", json_encode($posts, JSON_PRETTY_PRINT));
-    header("Location: blog.php");
-    exit();
-}
+    $error = validatePost($title, $content, $category, $categories);
 
-if (isset($_GET['delete']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    $id = $_GET['delete'];
+    if ($error === "" && $userId !== null) {
+        try {
+            $imagePath = uploadImage();
 
-    if (isset($posts[$id])) {
-        if (!empty($posts[$id]['image']) && file_exists($posts[$id]['image'])) {
-            unlink($posts[$id]['image']);
+            $stmt = $pdo->prepare(
+                "INSERT INTO posts (user_id, title, category, content, image)
+                 VALUES (?, ?, ?, ?, ?)"
+            );
+
+            $stmt->execute([$userId, $title, $category, $content, $imagePath]);
+
+            header("Location: blog.php");
+            exit();
+        } catch (PDOException $e) {
+            $error = "Postimi nuk u shtua.";
         }
-
-        unset($posts[$id]);
-        $posts = array_values($posts);
-        file_put_contents("posts.json", json_encode($posts, JSON_PRETTY_PRINT));
     }
-
-    header("Location: blog.php");
-    exit();
 }
 
-if (isset($_POST['edit_post']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    $id = $_POST['id'];
+// EDIT POST
+if (isset($_POST['edit_post']) && isAdmin()) {
+    $id = (int)($_POST['id'] ?? 0);
+    $title = trim($_POST['title'] ?? "");
+    $content = trim($_POST['content'] ?? "");
+    $category = $_POST['category'] ?? "";
 
-    if (isset($posts[$id])) {
-        $posts[$id]['title'] = $_POST['title'];
-        $posts[$id]['content'] = $_POST['content'];
-        $posts[$id]['category'] = $_POST['category'];
+    $error = validatePost($title, $content, $category, $categories);
 
-        $newImage = uploadImage();
-        if ($newImage !== "") {
-            $posts[$id]['image'] = $newImage;
+    if ($error === "" && $id > 0) {
+        try {
+            $stmt = $pdo->prepare("SELECT image FROM posts WHERE id = ? LIMIT 1");
+            $stmt->execute([$id]);
+            $oldPost = $stmt->fetch();
+
+            if ($oldPost) {
+                $newImage = uploadImage();
+
+                if ($newImage !== null) {
+                    if (!empty($oldPost['image']) && file_exists($oldPost['image'])) {
+                        unlink($oldPost['image']);
+                    }
+
+                    $stmt = $pdo->prepare(
+                        "UPDATE posts 
+                         SET title = ?, category = ?, content = ?, image = ?
+                         WHERE id = ?"
+                    );
+
+                    $stmt->execute([$title, $category, $content, $newImage, $id]);
+                } else {
+                    $stmt = $pdo->prepare(
+                        "UPDATE posts 
+                         SET title = ?, category = ?, content = ?
+                         WHERE id = ?"
+                    );
+
+                    $stmt->execute([$title, $category, $content, $id]);
+                }
+            }
+
+            header("Location: blog.php");
+            exit();
+        } catch (PDOException $e) {
+            $error = "Postimi nuk u perditesua.";
         }
-
-        file_put_contents("posts.json", json_encode($posts, JSON_PRETTY_PRINT));
     }
-
-    header("Location: blog.php");
-    exit();
 }
 
+// READ POSTS
+try {
+    $stmt = $pdo->prepare(
+        "SELECT posts.*, users.username AS author
+         FROM posts
+         LEFT JOIN users ON posts.user_id = users.id
+         ORDER BY posts.created_at DESC"
+    );
+
+    $stmt->execute();
+    $posts = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $posts = [];
+    $error = "Postimet nuk mund te lexohen.";
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Blog Spot</title>
-    <link rel="stylesheet" href="Style/blog.css">
+    <title>Blog</title>
     <link rel="stylesheet" href="Style/style.css">
-
-    <?php include "Includes/header.php"; ?>
+    <link rel="stylesheet" href="Style/blog.css">
 </head>
 <body>
 
-<?php if (!isset($_SESSION['user'])): ?>
+<?php include "Includes/header.php"; ?>
 
-<div class="login-page">
-    <div class="login-box">
-        <h1>Blog Spot</h1>
-        <p>Welcome back. Please login to continue.</p>
+<div class="blog-container">
 
-        <?php if (isset($error)): ?>
-            <div class="error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
+    <h1>Blog</h1>
 
-        <form method="POST">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button name="login">Login</button>
-        </form>
-    </div>
-</div>
+    <p>
+        Welcome, <strong><?= e($_SESSION['user']) ?></strong>
+    </p>
 
-<?php else: ?>
+    <?php if ($error !== ""): ?>
+        <p class="error-message"><?= e($error) ?></p>
+    <?php endif; ?>
 
-<div class="app">
+    <?php if (isAdmin()): ?>
+        <div class="post-form-box">
+            <h2>Add New Post</h2>
 
-    <nav class="navbar">
-    </nav>
+            <form method="POST" enctype="multipart/form-data">
+                <label>Title:</label>
+                <input type="text" name="title" required>
 
-    <section class="hero">
-        <div>
-            <h1>
-  Welcome back,
-  <span style="color: #e70909;">
-    <?php echo htmlspecialchars($_SESSION['user']); ?>
- </span>
-</h1>
-            <p>Discover stories, ideas and inspiration.</p>
+                <label>Category:</label>
+                <select name="category" required>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?= e($cat) ?>"><?= e($cat) ?></option>
+                    <?php endforeach; ?>
+                </select>
+
+                <label>Content:</label>
+                <textarea name="content" required></textarea>
+
+                <label>Image:</label>
+                <input type="file" name="image" accept="image/*">
+
+                <button type="submit" name="add_post">Add Post</button>
+            </form>
         </div>
+    <?php endif; ?>
 
-        <?php if ($_SESSION['role'] === 'admin'): ?>
-            <button class="open-modal" onclick="openModal()">+ Create New Post</button>
-        <?php endif; ?>
-    </section>
-
-    <main class="layout">
-
-        <section class="content">
-            <h2 class="section-title">Latest Posts</h2>
-
-            <div class="grid">
-                <?php foreach (array_reverse($posts, true) as $id => $post): ?>
-                    <div class="card">
-
-                        <?php if (!empty($post['image'])): ?>
-                            <img src="<?php echo htmlspecialchars($post['image']); ?>" class="post-img">
-                        <?php else: ?>
-                            <div class="no-img">Blog Spot</div>
-                        <?php endif; ?>
-
-                        <div class="card-body">
-
-                            <?php if (isset($_GET['edit']) && $_GET['edit'] == $id): ?>
-
-                                <form method="POST" enctype="multipart/form-data" class="edit-form">
-                                    <input type="hidden" name="id" value="<?php echo $id; ?>">
-
-                                    <input type="text" name="title" value="<?php echo htmlspecialchars($post['title']); ?>" required>
-
-                                    <textarea name="content" required><?php echo htmlspecialchars($post['content']); ?></textarea>
-
-                                    <select name="category">
-                                        <?php foreach ($categories as $cat): ?>
-                                            <option value="<?php echo $cat; ?>" <?php echo (($post['category'] ?? '') === $cat) ? 'selected' : ''; ?>>
-                                                <?php echo $cat; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-
-                                    <input type="file" name="image">
-                                    <button name="edit_post">Save Changes</button>
-                                </form>
-
-                            <?php else: ?>
-
-                                <span class="date"><?php echo htmlspecialchars($post['date']); ?></span>
-
-                                <h3><?php echo htmlspecialchars($post['title']); ?></h3>
-
-                                <p><?php echo htmlspecialchars($post['content']); ?></p>
-
-                                <div class="card-footer">
-                                    <div class="author">
-                                        <span class="avatar">👤</span>
-                                        <?php echo htmlspecialchars($post['author'] ?? 'admin'); ?>
-                                    </div>
-
-                                    <span class="tag"><?php echo htmlspecialchars($post['category'] ?? 'Life'); ?></span>
-                                </div>
-
-                                <?php if ($_SESSION['role'] === 'admin'): ?>
-                                    <div class="actions">
-                                        <a href="?edit=<?php echo $id; ?>" class="edit">Edit</a>
-                                        <a href="?delete=<?php echo $id; ?>" class="delete" onclick="return confirm('A je i sigurt?')">Delete</a>
-                                    </div>
-                                <?php endif; ?>
-
-                            <?php endif; ?>
-
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
-        
-        <aside class="sidebar">
-            <div class="side-box">
-                <input type="text" id="searchInput" placeholder="Search posts...">
-            </div>
-
-            <div class="side-box">
-                <h3>Categories</h3>
-                <?php foreach ($categories as $cat): ?>
-                    <div class="cat-row">
-                        <span><?php echo $cat; ?></span>
-                        <b><?php echo count(array_filter($posts, fn($p) => ($p['category'] ?? '') === $cat)); ?></b>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-
-            <div class="side-box">
-                <h3>Recent Posts</h3>
-                <?php foreach (array_slice(array_reverse($posts), 0, 4) as $post): ?>
-                    <div class="recent">
-                        <?php if (!empty($post['image'])): ?>
-                            <img src="<?php echo htmlspecialchars($post['image']); ?>">
-                        <?php endif; ?>
-                        <div>
-                            <strong><?php echo htmlspecialchars($post['title']); ?></strong>
-                            <small><?php echo htmlspecialchars($post['date']); ?></small>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </aside>
-
-    </main>
-</div>
-
-<?php if ($_SESSION['role'] === 'admin'): ?>
-<div class="modal" id="postModal">
-    <div class="modal-box">
-        <button class="close" onclick="closeModal()">×</button>
-        <h2>Create New Post</h2>
-
-        <form method="POST" enctype="multipart/form-data">
-            <input type="text" name="title" placeholder="Post title" required>
-
-            <textarea name="content" placeholder="Write your post..." required></textarea>
-
-            <select name="category">
-                <?php foreach ($categories as $cat): ?>
-                    <option value="<?php echo $cat; ?>"><?php echo $cat; ?></option>
-                <?php endforeach; ?>
-            </select>
-
-            <input type="file" name="image">
-            <button name="add_post">Publish Post</button>
-        </form>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search posts...">
     </div>
+
+    <h2>All Posts</h2>
+
+    <div id="postsGrid">
+        <?php if (count($posts) === 0): ?>
+            <p>No posts found.</p>
+        <?php endif; ?>
+
+        <?php foreach ($posts as $post): ?>
+            <div class="post-card card" id="post-<?= (int)$post['id'] ?>">
+
+                <?php if (!empty($post['image'])): ?>
+                    <img src="<?= e($post['image']) ?>" alt="Post image" class="post-img">
+                <?php endif; ?>
+
+                <?php if (isset($_GET['edit']) && (int)$_GET['edit'] === (int)$post['id'] && isAdmin()): ?>
+
+                    <h3>Edit Post</h3>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="id" value="<?= (int)$post['id'] ?>">
+
+                        <label>Title:</label>
+                        <input type="text" name="title" value="<?= e($post['title']) ?>" required>
+
+                        <label>Category:</label>
+                        <select name="category" required>
+                            <?php foreach ($categories as $cat): ?>
+                                <option value="<?= e($cat) ?>" 
+                                    <?= ($post['category'] === $cat) ? "selected" : "" ?>>
+                                    <?= e($cat) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+
+                        <label>Content:</label>
+                        <textarea name="content" required><?= e($post['content']) ?></textarea>
+
+                        <label>Change Image:</label>
+                        <input type="file" name="image" accept="image/*">
+
+                        <button type="submit" name="edit_post">Save</button>
+                        <a href="blog.php">Cancel</a>
+                    </form>
+
+                <?php else: ?>
+
+                    <h3><?= e($post['title']) ?></h3>
+
+                    <p><?= e($post['content']) ?></p>
+
+                    <small>
+                        Category: <?= e($post['category']) ?> |
+                        Author: <?= e($post['author'] ?? "Unknown") ?> |
+                        Date: <?= e(date("d M Y", strtotime($post['created_at']))) ?>
+                    </small>
+
+                    <?php if (isAdmin()): ?>
+                        <div class="post-actions">
+                            <a href="blog.php?edit=<?= (int)$post['id'] ?>">Edit</a>
+                            <button class="ajax-delete" data-id="<?= (int)$post['id'] ?>">
+                                Delete
+                            </button>
+                        </div>
+                    <?php endif; ?>
+
+                <?php endif; ?>
+
+            </div>
+        <?php endforeach; ?>
+    </div>
+
 </div>
-<?php endif; ?>
 
 <script src="Script/blog.js"></script>
- <?php include "Includes/footer.php"; ?>
 
-
-<?php endif; ?>
+<?php include "Includes/footer.php"; ?>
 
 </body>
 </html>
