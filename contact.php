@@ -240,3 +240,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
     <script src="Script/contact.js?v=3" defer></script>
 </head>
 <body>
+    
+
+<?php require "Includes/header.php"; ?>
+
+<section class="contact-hero">
+    <div class="contact-hero-text">
+        <span>WE'D LOVE TO HEAR FROM YOU</span>
+        <h1>Contact Us</h1>
+        <p>Have a question or need help? Fill out the form and our team will get back to you as soon as possible.</p>
+    </div>
+</section>
+
+<section class="contact-section">
+    <div class="contact-form-box">
+        <h2>Send Us a Message</h2>
+        <p class="form-note">Your message will be saved securely and sent to our team by email.</p>
+
+        <?php if ($error): ?>
+            <div class="alert error"><?php echo e($error); ?></div>
+        <?php endif; ?>
+
+        <?php if ($success): ?>
+            <div class="alert success"><?php echo e($success); ?></div>
+        <?php endif; ?>
+
+        <form method="POST" action="contact.php" novalidate>
+            <input type="hidden" name="csrf_token" value="<?php echo e($_SESSION['contact_csrf_token']); ?>">
+
+            <label for="name">Full Name</label>
+            <input id="name" type="text" name="name" placeholder="Your name"
+                   value="<?php echo e($name); ?>" maxlength="70" required>
+
+            <label for="email">Email Address</label>
+            <input id="email" type="email" name="email" placeholder="Your email"
+                   value="<?php echo e($email); ?>" maxlength="160" required>
+
+            <label for="subject">Subject</label>
+            <input id="subject" type="text" name="subject" placeholder="How can we help?"
+                   value="<?php echo e($subject); ?>" maxlength="120" required>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Write your message here..." maxlength="2000" required><?php echo e($message); ?></textarea>
+
+            <button type="submit" name="send_message">Send Message</button>
+        </form>
+    </div>
+
+    <div class="contact-info-box">
+        <h2>Get in Touch</h2>
+
+        <div class="info-item">
+            <div class="icon">AD</div>
+            <div>
+                <h3>Address</h3>
+                <p>Rr. Skenderbeu, Prishtine, Kosove</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="icon">PH</div>
+            <div>
+                <h3>Phone</h3>
+                <p>+383 44 123 456</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="icon">@</div>
+            <div>
+                <h3>Email</h3>
+                <p>info@carmarketplace.com</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="icon">HR</div>
+            <div>
+                <h3>Working Hours</h3>
+                <p>Mon - Fri: 09:00 - 18:00</p>
+                <p>Sat: 10:00 - 15:00</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-cta">
+    <div>
+        <h2>Looking for your dream car?</h2>
+        <p>Check out our latest listings.</p>
+    </div>
+    <a href="models.php">Browse Cars</a>
+</section>
+
+<?php require "Includes/footer.php"; ?>
+
+</body>
+</html>
