@@ -1,5 +1,14 @@
-CREATE DATABASE IF NOT EXISTS car_marketplace;
+CREATE DATABASE IF NOT EXISTS car_marketplace CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE car_marketplace;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(80) NOT NULL UNIQUE,
+    email VARCHAR(160) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE IF NOT EXISTS posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -25,6 +34,9 @@ CREATE TABLE IF NOT EXISTS cars (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY unique_car (brand, model, year)
 );
+
+INSERT IGNORE INTO users (username, email, password, role) VALUES
+('admin', 'admin@carmarketplace.local', '$2y$10$1E0s0iFUhMe2DMr339FVMOkrqvwHQJl0Fs1VLFdjqrop7Zxx4/EJO', 'admin');
 
 INSERT IGNORE INTO cars (user_id, brand, model, year, price, fuel, body_type, image, status) VALUES
 (NULL, 'Audi', 'RS7', 2023, 85000.00, 'Petrol', 'Sedan', 'img/audi-sedan.png', 'active'),

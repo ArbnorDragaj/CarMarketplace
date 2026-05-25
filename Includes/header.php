@@ -6,6 +6,10 @@ if (session_status() === PHP_SESSION_NONE) {
 if (!isset($site_name)) {
     $site_name = "CarMarketPlace";
 }
+
+if (!isset($currentPage)) {
+    $currentPage = basename($_SERVER['PHP_SELF']);
+}
 ?>
 
 <header class="main-header">
