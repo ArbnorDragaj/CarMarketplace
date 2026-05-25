@@ -150,7 +150,7 @@ $filteredCars = $cars;
     <meta charset="UTF-8">
     <title>Models</title>
 
-    <link rel="stylesheet" href="Style/style.css">
+    <link rel="stylesheet" href="Style/style.css?v=3">
     <link rel="stylesheet" href="Style/models.css">
 </head>
 <body>
