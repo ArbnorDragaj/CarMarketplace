@@ -19,6 +19,16 @@ if (($_SESSION['role'] ?? '') !== "admin") {
     exit();
 }
 
+if (!empty($_SESSION['admin_error'])) {
+    $error = $_SESSION['admin_error'];
+    unset($_SESSION['admin_error']);
+}
+
+if (!empty($_SESSION['admin_success'])) {
+    $success = $_SESSION['admin_success'];
+    unset($_SESSION['admin_success']);
+}
+
 function uploadCarImage($file, &$error) {
     if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
         $error = "Ju lutem ngarkoni një foto për veturën.";
@@ -165,6 +175,8 @@ if (isset($_GET['success']) && $_GET['success'] === 'added') {
     $success = "Statusi i vetures u ndryshua me sukses.";
 } elseif (isset($_GET['success']) && $_GET['success'] === 'deleted') {
     $success = "Vetura u fshi me sukses.";
+} elseif (isset($_GET['success']) && $_GET['success'] === 'edited') {
+    $success = "Vetura u perditesua me sukses.";
 }
 
 try {
@@ -189,7 +201,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <title>Admin Panel - CarMarketPlace</title>
-    <link rel="stylesheet" href="Style/style.css">
+    <link rel="stylesheet" href="Style/style.css?v=3">
     <link rel="stylesheet" href="Style/admin.css">
 </head>
 <body>
@@ -237,7 +249,7 @@ try {
             <div class="admin-form-card">
                 <h2>Shto veturë të re</h2>
 
-                <form method="POST" class="car-form" enctype="multipart/form-data">
+                <form method="POST" action="add_car.php" class="car-form" enctype="multipart/form-data">
                     <div class="form-row">
                         <input type="text" name="brand" placeholder="Marka p.sh. Audi" required>
                         <input type="text" name="model" placeholder="Modeli p.sh. RS7" required>
@@ -326,7 +338,9 @@ try {
 
                                 <td>
                                     <div class="action-buttons">
-                                        <form method="POST" action="admin.php" style="display:inline;">
+                                        <a href="edit_car.php?id=<?php echo e($car['id']); ?>" class="action-btn edit-btn">Edito</a>
+
+                                        <form method="POST" action="admin.php" class="toggle-car-form" style="display:inline;">
                                             <input type="hidden" name="car_id" value="<?php echo e($car['id']); ?>">
                                         <button
                                             type="submit"
@@ -339,7 +353,7 @@ try {
                                         </button>
                                         </form>
 
-                                        <form method="POST" action="admin.php" style="display:inline;" onsubmit="return confirm('A jeni i sigurt qe doni ta fshini kete veture?');">
+                                        <form method="POST" action="delete_car.php" class="delete-car-form" data-confirm="A jeni i sigurt qe doni ta fshini kete veture?" style="display:inline;">
                                             <input type="hidden" name="car_id" value="<?php echo e($car['id']); ?>">
                                         <button
                                             type="submit"
@@ -364,6 +378,8 @@ try {
 </section>
 
 <?php include 'Includes/footer.php'; ?>
+
+<script src="Script/admin.js"></script>
 
 </body>
 </html>

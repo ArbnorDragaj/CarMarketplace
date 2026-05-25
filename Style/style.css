@@ -32,6 +32,11 @@
   transition: 0.3s ease;
 }
 
+.logo h1 {
+  margin: 0;
+  line-height: 1;
+}
+
 .logo a:hover {
   color: #ff2d2d;
 }

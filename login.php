@@ -9,12 +9,39 @@ $error = "";
 $success = "";
 $username = "";
 
+function getSafeRedirect($value) {
+    $allowedRedirects = ['index.php', 'models.php', 'blog.php', 'contact.php', 'rreth-nesh.php'];
+    $value = trim((string)$value);
+
+    if ($value === '') {
+        return '';
+    }
+
+    $path = parse_url($value, PHP_URL_PATH);
+    $fileName = basename($path ?: $value);
+
+    return in_array($fileName, $allowedRedirects, true) ? $fileName : '';
+}
+
+$redirect = getSafeRedirect($_POST['redirect'] ?? $_GET['redirect'] ?? '');
+$back = getSafeRedirect($_POST['back'] ?? $_GET['back'] ?? '');
+
+if ($back === '' || $back === 'models.php') {
+    $back = 'index.php';
+}
+
 if (isset($_GET['logged_out'])) {
     $success = "Jeni shkycur me sukses.";
+} elseif (($_GET['message'] ?? '') === 'services') {
+    $success = "Per te perdorur sherbimet duhet te kyqeni.";
 }
 
 if (isset($_SESSION['user_id'], $_SESSION['user'])) {
-    header("Location: " . (($_SESSION['role'] ?? '') === 'admin' ? "admin.php" : "index.php"));
+    if ($redirect !== '') {
+        header("Location: " . $redirect);
+    } else {
+        header("Location: " . (($_SESSION['role'] ?? '') === 'admin' ? "admin.php" : "index.php"));
+    }
     exit();
 }
 
@@ -36,7 +63,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
 
-                if ($user['role'] === 'admin') {
+                if ($redirect !== '') {
+                    header("Location: " . $redirect);
+                } elseif ($user['role'] === 'admin') {
                     header("Location: admin.php");
                 } else {
                     header("Location: index.php");
@@ -75,6 +104,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form method="post" action="login.php" autocomplete="off">
+            <?php if ($redirect !== ''): ?>
+                <input type="hidden" name="redirect" value="<?php echo e($redirect); ?>">
+                <input type="hidden" name="back" value="<?php echo e($back); ?>">
+            <?php endif; ?>
+
             <div class="input-box">
                 <input type="text" name="username" placeholder="Username" autocomplete="off" required value="<?php echo e($username); ?>">
             </div>
@@ -89,8 +123,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <p style="text-align:center; margin-top:18px; color:#d8dde4;">
             Nuk ke llogari?
-            <a href="register.php" style="color:#f5c400; font-weight:bold; text-decoration:none;">Register</a>
+            <a href="register.php<?php echo $redirect !== '' ? '?redirect=' . urlencode($redirect) . '&back=' . urlencode($back) : ''; ?>" style="color:#f5c400; font-weight:bold; text-decoration:none;">Register</a>
         </p>
+
+        <?php if ($redirect !== ''): ?>
+            <p class="back-link">
+                <a href="<?php echo e($back); ?>">Kthehu mbrapa</a>
+            </p>
+        <?php endif; ?>
     </div>
 
     <script>

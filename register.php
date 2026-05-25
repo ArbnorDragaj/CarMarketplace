@@ -10,8 +10,29 @@ $success = "";
 $username = "";
 $email = "";
 
+function getSafeRegisterRedirect($value) {
+    $allowedRedirects = ['index.php', 'models.php', 'blog.php', 'contact.php', 'rreth-nesh.php'];
+    $value = trim((string)$value);
+
+    if ($value === '') {
+        return '';
+    }
+
+    $path = parse_url($value, PHP_URL_PATH);
+    $fileName = basename($path ?: $value);
+
+    return in_array($fileName, $allowedRedirects, true) ? $fileName : '';
+}
+
+$redirect = getSafeRegisterRedirect($_POST['redirect'] ?? $_GET['redirect'] ?? '');
+$back = getSafeRegisterRedirect($_POST['back'] ?? $_GET['back'] ?? '');
+
+if ($back === '' || $back === 'models.php') {
+    $back = 'index.php';
+}
+
 if (isset($_SESSION['user_id'], $_SESSION['user'])) {
-    header("Location: index.php");
+    header("Location: " . ($redirect !== '' ? $redirect : "index.php"));
     exit();
 }
 
@@ -98,6 +119,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form method="post" action="register.php" autocomplete="off">
+            <?php if ($redirect !== ''): ?>
+                <input type="hidden" name="redirect" value="<?php echo e($redirect); ?>">
+                <input type="hidden" name="back" value="<?php echo e($back); ?>">
+            <?php endif; ?>
+
             <div class="input-box">
                 <input type="text" name="username" placeholder="Username" autocomplete="off" required value="<?php echo e($username); ?>">
             </div>
@@ -121,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <p class="register-link">
             Ke llogari?
-            <a href="login.php">Login</a>
+            <a href="login.php<?php echo $redirect !== '' ? '?redirect=' . urlencode($redirect) . '&back=' . urlencode($back) : ''; ?>">Login</a>
         </p>
     </div>
 
