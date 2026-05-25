@@ -175,6 +175,22 @@ body::after {
   transform: translateY(0);
 }
 
+.back-link {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.back-link a {
+  color: #d8dde4;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link a:hover {
+  color: #f1c40f;
+}
+
 /* Autofill fix */
 .input-box input:-webkit-autofill,
 .input-box input:-webkit-autofill:hover,
