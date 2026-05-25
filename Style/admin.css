@@ -369,6 +369,8 @@ button.action-btn {
 
 .edit-panel {
   max-width: 900px;
+  margin: 0 auto;
+  border-color: rgba(255, 45, 45, 0.16);
 }
 
 .current-car-preview {
@@ -376,14 +378,19 @@ button.action-btn {
   align-items: center;
   gap: 18px;
   margin-bottom: 24px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .current-car-preview img {
-  width: 150px;
-  height: 96px;
+  width: 145px;
+  height: 92px;
   object-fit: cover;
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
 }
 
 .current-car-preview h2 {
@@ -393,6 +400,27 @@ button.action-btn {
 .current-car-preview p {
   margin: 0;
   color: rgba(255, 255, 255, 0.66);
+}
+
+.edit-car-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.edit-car-meta span {
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.edit-panel .car-form button {
+  min-width: 190px;
 }
 
 @media (max-width: 1000px) {
@@ -424,5 +452,16 @@ button.action-btn {
 
   .car-form button {
     width: 100%;
+  }
+
+  .current-car-preview {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .current-car-preview img {
+    width: 140px;
+    height: 90px;
+    max-width: 100%;
   }
 }
