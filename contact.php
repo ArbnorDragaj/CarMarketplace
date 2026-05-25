@@ -50,7 +50,7 @@ if (isset($_POST['send_message'])) {
 </head>
 <body>
 
-require "Includes/header.php";
+<?php  require "Includes/header.php";
 ?>
 
 <link rel="stylesheet" href="style/contact.css">
