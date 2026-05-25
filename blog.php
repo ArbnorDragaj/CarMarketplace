@@ -211,6 +211,33 @@ if (isset($_POST['edit_post']) && isAdmin()) {
     }
 }
 
+// DELETE POST
+if (isset($_POST['delete_post']) && isAdmin()) {
+    $id = (int)($_POST['id'] ?? 0);
+
+    if ($id > 0) {
+        try {
+            $stmt = $pdo->prepare("SELECT image FROM posts WHERE id = ? LIMIT 1");
+            $stmt->execute([$id]);
+            $oldPost = $stmt->fetch();
+
+            if ($oldPost) {
+                if (!empty($oldPost['image']) && file_exists($oldPost['image'])) {
+                    unlink($oldPost['image']);
+                }
+
+                $stmt = $pdo->prepare("DELETE FROM posts WHERE id = ?");
+                $stmt->execute([$id]);
+            }
+
+            header("Location: blog.php");
+            exit();
+        } catch (PDOException $e) {
+            $error = "Postimi nuk u fshi.";
+        }
+    }
+}
+
 // READ POSTS
 try {
     $stmt = $pdo->prepare(
@@ -240,12 +267,17 @@ try {
 
 <?php include "Includes/header.php"; ?>
 
+<main class="blog-page">
 <div class="blog-container">
 
-    <h1>Blog</h1>
+    <section class="blog-hero">
+        <span class="blog-kicker">Car Marketplace</span>
+        <h1>Blog</h1>
+        <p>Read the latest posts, guides, and marketplace updates.</p>
+    </section>
 
-    <p>
-        Welcome, <strong><?= e($_SESSION['user']) ?></strong>
+    <p class="blog-user">
+        Signed in as <strong><?= e($_SESSION['user']) ?></strong>
     </p>
 
     <?php if ($error !== ""): ?>
@@ -257,21 +289,21 @@ try {
             <h2>Add New Post</h2>
 
             <form method="POST" enctype="multipart/form-data">
-                <label>Title:</label>
-                <input type="text" name="title" required>
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required>
 
-                <label>Category:</label>
-                <select name="category" required>
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
                     <?php foreach ($categories as $cat): ?>
                         <option value="<?= e($cat) ?>"><?= e($cat) ?></option>
                     <?php endforeach; ?>
                 </select>
 
-                <label>Content:</label>
-                <textarea name="content" required></textarea>
+                <label for="content">Content:</label>
+                <textarea id="content" name="content" required></textarea>
 
-                <label>Image:</label>
-                <input type="file" name="image" accept="image/*">
+                <label for="image">Image:</label>
+                <input type="file" id="image" name="image" accept="image/*">
 
                 <button type="submit" name="add_post">Add Post</button>
             </form>
@@ -282,11 +314,11 @@ try {
         <input type="text" id="searchInput" placeholder="Search posts...">
     </div>
 
-    <h2>All Posts</h2>
+    <h2 class="section-heading">All Posts</h2>
 
     <div id="postsGrid">
         <?php if (count($posts) === 0): ?>
-            <p>No posts found.</p>
+            <p class="empty-state">No posts found.</p>
         <?php endif; ?>
 
         <?php foreach ($posts as $post): ?>
@@ -294,20 +326,23 @@ try {
 
                 <?php if (!empty($post['image'])): ?>
                     <img src="<?= e($post['image']) ?>" alt="Post image" class="post-img">
+                <?php else: ?>
+                    <div class="no-img">No Image</div>
                 <?php endif; ?>
 
                 <?php if (isset($_GET['edit']) && (int)$_GET['edit'] === (int)$post['id'] && isAdmin()): ?>
 
+                    <div class="card-body">
                     <h3>Edit Post</h3>
 
                     <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="id" value="<?= (int)$post['id'] ?>">
 
-                        <label>Title:</label>
-                        <input type="text" name="title" value="<?= e($post['title']) ?>" required>
+                        <label for="edit-title-<?= (int)$post['id'] ?>">Title:</label>
+                        <input type="text" id="edit-title-<?= (int)$post['id'] ?>" name="title" value="<?= e($post['title']) ?>" required>
 
-                        <label>Category:</label>
-                        <select name="category" required>
+                        <label for="edit-category-<?= (int)$post['id'] ?>">Category:</label>
+                        <select id="edit-category-<?= (int)$post['id'] ?>" name="category" required>
                             <?php foreach ($categories as $cat): ?>
                                 <option value="<?= e($cat) ?>" 
                                     <?= ($post['category'] === $cat) ? "selected" : "" ?>>
@@ -316,36 +351,40 @@ try {
                             <?php endforeach; ?>
                         </select>
 
-                        <label>Content:</label>
-                        <textarea name="content" required><?= e($post['content']) ?></textarea>
+                        <label for="edit-content-<?= (int)$post['id'] ?>">Content:</label>
+                        <textarea id="edit-content-<?= (int)$post['id'] ?>" name="content" required><?= e($post['content']) ?></textarea>
 
-                        <label>Change Image:</label>
-                        <input type="file" name="image" accept="image/*">
+                        <label for="edit-image-<?= (int)$post['id'] ?>">Change Image:</label>
+                        <input type="file" id="edit-image-<?= (int)$post['id'] ?>" name="image" accept="image/*">
 
                         <button type="submit" name="edit_post">Save</button>
-                        <a href="blog.php">Cancel</a>
+                        <a class="cancel-link" href="blog.php">Cancel</a>
                     </form>
+                    </div>
 
                 <?php else: ?>
 
+                    <div class="card-body">
+                    <span class="tag"><?= e($post['category']) ?></span>
                     <h3><?= e($post['title']) ?></h3>
 
                     <p><?= e($post['content']) ?></p>
 
-                    <small>
-                        Category: <?= e($post['category']) ?> |
-                        Author: <?= e($post['author'] ?? "Unknown") ?> |
-                        Date: <?= e(date("d M Y", strtotime($post['created_at']))) ?>
-                    </small>
+                    <div class="card-footer">
+                        <span class="author"><?= e($post['author'] ?? "Unknown") ?></span>
+                        <span class="date"><?= e(date("d M Y", strtotime($post['created_at']))) ?></span>
+                    </div>
 
                     <?php if (isAdmin()): ?>
                         <div class="post-actions">
                             <a href="blog.php?edit=<?= (int)$post['id'] ?>">Edit</a>
-                            <button class="ajax-delete" data-id="<?= (int)$post['id'] ?>">
-                                Delete
-                            </button>
+                            <form method="POST" onsubmit="return confirm('Delete this post?');">
+                                <input type="hidden" name="id" value="<?= (int)$post['id'] ?>">
+                                <button type="submit" name="delete_post" class="ajax-delete" data-id="<?= (int)$post['id'] ?>">Delete</button>
+                            </form>
                         </div>
                     <?php endif; ?>
+                    </div>
 
                 <?php endif; ?>
 
@@ -354,6 +393,7 @@ try {
     </div>
 
 </div>
+</main>
 
 <script src="Script/blog.js"></script>
 
