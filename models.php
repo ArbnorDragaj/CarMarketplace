@@ -2,7 +2,17 @@
 session_start();
 
 if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
+    function getLoginBackPage() {
+        $allowedPages = ['index.php', 'contact.php', 'rreth-nesh.php', 'blog.php'];
+        $referer = $_SERVER['HTTP_REFERER'] ?? '';
+        $path = parse_url($referer, PHP_URL_PATH);
+        $fileName = basename($path ?: '');
+
+        return in_array($fileName, $allowedPages, true) ? $fileName : 'index.php';
+    }
+
+    $backPage = urlencode(getLoginBackPage());
+    header("Location: login.php?redirect=models.php&message=services&back=" . $backPage);
     exit();
 }
 
