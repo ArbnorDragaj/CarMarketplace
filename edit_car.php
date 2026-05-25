@@ -185,6 +185,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div>
                     <h2><?php echo e($car['brand'] . ' ' . $car['model']); ?></h2>
                     <p>Foto aktuale ruhet nese nuk zgjedh foto te re.</p>
+                    <div class="edit-car-meta">
+                        <span>ID #<?php echo e($car['id']); ?></span>
+                        <span><?php echo $car['status'] === 'active' ? 'Aktive' : 'Joaktive'; ?></span>
+                    </div>
                 </div>
             </div>
 
