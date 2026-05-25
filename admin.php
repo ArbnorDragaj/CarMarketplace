@@ -58,6 +58,66 @@ function uploadCarImage($file, &$error) {
     return $publicDir . $newFileName;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_car_status'])) {
+    $carId = filter_input(INPUT_POST, 'car_id', FILTER_VALIDATE_INT);
+
+    if (!$carId) {
+        $error = "Vetura e zgjedhur nuk eshte valide.";
+    } else {
+        try {
+            $stmt = $pdo->prepare("SELECT status FROM cars WHERE id = ? LIMIT 1");
+            $stmt->execute([$carId]);
+            $car = $stmt->fetch();
+
+            if (!$car) {
+                $error = "Vetura nuk u gjet.";
+            } else {
+                $newStatus = $car['status'] === 'active' ? 'inactive' : 'active';
+                $stmt = $pdo->prepare("UPDATE cars SET status = ? WHERE id = ?");
+                $stmt->execute([$newStatus, $carId]);
+
+                header("Location: admin.php?success=status");
+                exit();
+            }
+        } catch (PDOException $e) {
+            $error = "Statusi i vetures nuk mund te ndryshohet.";
+        }
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_car'])) {
+    $carId = filter_input(INPUT_POST, 'car_id', FILTER_VALIDATE_INT);
+
+    if (!$carId) {
+        $error = "Vetura e zgjedhur nuk eshte valide.";
+    } else {
+        try {
+            $stmt = $pdo->prepare("SELECT image FROM cars WHERE id = ? LIMIT 1");
+            $stmt->execute([$carId]);
+            $car = $stmt->fetch();
+
+            if (!$car) {
+                $error = "Vetura nuk u gjet.";
+            } else {
+                $stmt = $pdo->prepare("DELETE FROM cars WHERE id = ?");
+                $stmt->execute([$carId]);
+
+                if (!empty($car['image']) && strpos($car['image'], 'uploads/cars/') === 0) {
+                    $imagePath = __DIR__ . "/" . $car['image'];
+                    if (is_file($imagePath)) {
+                        unlink($imagePath);
+                    }
+                }
+
+                header("Location: admin.php?success=deleted");
+                exit();
+            }
+        } catch (PDOException $e) {
+            $error = "Vetura nuk mund te fshihet.";
+        }
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_car'])) {
     $brand = trim($_POST['brand'] ?? '');
     $model = trim($_POST['model'] ?? '');
@@ -101,6 +161,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_car'])) {
 
 if (isset($_GET['success']) && $_GET['success'] === 'added') {
     $success = "Vetura u shtua me sukses.";
+} elseif (isset($_GET['success']) && $_GET['success'] === 'status') {
+    $success = "Statusi i vetures u ndryshua me sukses.";
+} elseif (isset($_GET['success']) && $_GET['success'] === 'deleted') {
+    $success = "Vetura u fshi me sukses.";
 }
 
 try {
@@ -262,22 +326,30 @@ try {
 
                                 <td>
                                     <div class="action-buttons">
+                                        <form method="POST" action="admin.php" style="display:inline;">
+                                            <input type="hidden" name="car_id" value="<?php echo e($car['id']); ?>">
                                         <button
-                                            type="button"
+                                            type="submit"
+                                            name="toggle_car_status"
                                             class="action-btn <?php echo $car['status'] === 'active' ? 'deactivate-btn' : 'activate-btn'; ?> toggle-status-btn"
                                             data-id="<?php echo e($car['id']); ?>"
                                             data-status="<?php echo e($car['status']); ?>"
                                         >
                                             <?php echo $car['status'] === 'active' ? 'Çaktivizo' : 'Aktivizo'; ?>
                                         </button>
+                                        </form>
 
+                                        <form method="POST" action="admin.php" style="display:inline;" onsubmit="return confirm('A jeni i sigurt qe doni ta fshini kete veture?');">
+                                            <input type="hidden" name="car_id" value="<?php echo e($car['id']); ?>">
                                         <button
-                                            type="button"
+                                            type="submit"
+                                            name="delete_car"
                                             class="action-btn delete-btn delete-car-btn"
                                             data-id="<?php echo e($car['id']); ?>"
                                         >
                                             Fshij
                                         </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -293,6 +365,5 @@ try {
 
 <?php include 'Includes/footer.php'; ?>
 
-<script src="Script/admin.js"></script>
 </body>
 </html>
