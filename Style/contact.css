@@ -1,10 +1,21 @@
-contact-hero {
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0f0f0f;
+  color: white;
+}
+
+.contact-hero {
   min-height: 460px;
   background:
     linear-gradient(rgba(0, 0, 0, 0.64), rgba(0, 0, 0, 0.76)),
     url("../img/car 3.jpg");
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   padding: 110px 7% 60px;
@@ -39,7 +50,7 @@ contact-hero {
   background: #0f0f0f;
   padding: 56px 7%;
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
   gap: 28px;
   color: white;
 }
@@ -77,6 +88,7 @@ contact-hero {
   color: white;
   outline: none;
   transition: 0.25s ease;
+  font: inherit;
 }
 
 .contact-form-box textarea {
@@ -102,6 +114,7 @@ contact-hero {
   cursor: pointer;
   transition: 0.25s ease;
   box-shadow: 0 14px 28px rgba(231, 9, 9, 0.25);
+  font: inherit;
 }
 
 .contact-form-box button:hover {
@@ -167,6 +180,7 @@ contact-hero {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 24px;
 }
 
 .contact-cta h2 {
@@ -205,6 +219,11 @@ contact-hero {
     grid-template-columns: 1fr;
   }
 
+  .contact-hero {
+    min-height: 420px;
+    padding-top: 145px;
+  }
+
   .contact-hero-text h1 {
     font-size: 48px;
   }
@@ -213,5 +232,39 @@ contact-hero {
     flex-direction: column;
     gap: 20px;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 560px) {
+  .contact-hero {
+    min-height: 380px;
+    padding: 145px 6% 46px;
+  }
+
+  .contact-hero-text h1 {
+    font-size: 40px;
+  }
+
+  .contact-hero-text p {
+    font-size: 17px;
+  }
+
+  .contact-section {
+    padding: 34px 5%;
+  }
+
+  .contact-form-box,
+  .contact-info-box,
+  .contact-cta {
+    padding: 22px;
+  }
+
+  .info-item {
+    align-items: flex-start;
+  }
+
+  .contact-cta a {
+    width: 100%;
+    text-align: center;
   }
 }

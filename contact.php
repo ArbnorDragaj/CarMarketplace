@@ -236,8 +236,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kontakt - CarMarketPlace</title>
     <link rel="stylesheet" href="Style/style.css?v=3">
-    <link rel="stylesheet" href="Style/contact.css?v=3">
-    <script src="Script/contact.js?v=3" defer></script>
+    <link rel="stylesheet" href="Style/contact.css?v=4">
+    <script src="Script/contact.js?v=4" defer></script>
 </head>
 <body>
     
