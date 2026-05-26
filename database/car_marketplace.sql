@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -17,8 +17,13 @@ CREATE TABLE IF NOT EXISTS posts (
     category VARCHAR(100) NOT NULL,
     content TEXT NOT NULL,
     image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_posts_user_id (user_id),
+    CONSTRAINT fk_posts_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS cars (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -32,8 +37,13 @@ CREATE TABLE IF NOT EXISTS cars (
     image VARCHAR(255) NOT NULL,
     status ENUM('active', 'inactive') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_car (brand, model, year)
-);
+    UNIQUE KEY unique_car (brand, model, year),
+    KEY idx_cars_user_id (user_id),
+    CONSTRAINT fk_cars_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 INSERT IGNORE INTO users (username, email, password, role) VALUES
@@ -65,6 +75,7 @@ CREATE TABLE IF NOT EXISTS contact_messages (
     message TEXT NOT NULL,
     email_sent TINYINT(1) NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_contact_messages_user_id (user_id),
     CONSTRAINT fk_contact_messages_user
         FOREIGN KEY (user_id) REFERENCES users(id)
         ON DELETE SET NULL
