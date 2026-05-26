@@ -6,7 +6,7 @@ $host = "127.0.0.1";
 $dbname = "car_marketplace";
 $dbUser = "root";
 $dbPass = "";
-$ports = [3306, 3307];
+$ports = [3307, 3306];
 
 function createPdoConnection(string $host, int $port, string $user, string $pass): PDO {
     return new PDO(
@@ -48,7 +48,7 @@ function ensureDatabaseIsReady(PDO $pdo, string $dbname): void {
     $pdo->exec("CREATE DATABASE IF NOT EXISTS `$safeDbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
     $pdo->exec("USE `$safeDbName`");
 
-    $requiredTables = ['users', 'cars', 'posts'];
+    $requiredTables = ['users', 'cars', 'posts', 'contact_messages'];
     foreach ($requiredTables as $tableName) {
         if (!tableExists($pdo, $dbname, $tableName)) {
             runSqlFile($pdo, __DIR__ . "/database/car_marketplace.sql");
