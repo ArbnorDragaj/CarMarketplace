@@ -1,59 +1,169 @@
 # CarMarketPlace
 
-CarMarketPlace është një web aplikacion i krijuar me PHP, HTML, CSS dhe JavaScript. Projekti shërben për shfaqjen dhe menaxhimin e veturave, ku përdoruesit mund të shohin modelet e veturave, ndërsa admini ka qasje në një panel të veçantë për menaxhimin e tyre.
+CarMarketPlace është një web aplikacion për prezantimin dhe menaxhimin e veturave. Projekti është ndërtuar me PHP, MySQL, HTML, CSS dhe JavaScript. Përdoruesit mund të shohin modelet e veturave, të filtrojnë rezultatet, të lexojnë postime në blog dhe të dërgojnë mesazhe kontakti. Admini ka panel të veçantë për menaxhimin e veturave dhe postimeve.
 
-## Përshkrimi
+## Funksionalitetet kryesore
 
-Ky projekt paraqet një platformë të thjeshtë për treg të veturave. Projekti përmban faqe publike si Ballina, Rreth Nesh, Shërbimet/Modelet, Kontakti dhe Blog. Gjithashtu përmban sistem login-i me dy role: user dhe admin.
-
-Admini mund të hyjë në panelin e administrimit, ku mund të shtojë vetura të reja, të ngarkojë fotografi, t’i aktivizojë/çaktivizojë veturat dhe t’i fshijë ato nga lista.
+- Faqe kryesore me prezantim të platformës.
+- Faqe `Rreth Nesh` me mision, vizion dhe përshkrim të funksionaliteteve.
+- Sistem `Login` dhe `Register` me role `user` dhe `admin`.
+- Password-at ruhen të hash-uar me `password_hash()`.
+- Login-i verifikohet me `password_verify()`.
+- Panel admin për shtim, editim, aktivizim/çaktivizim dhe fshirje të veturave.
+- Upload i fotografive të veturave në `uploads/cars/`.
+- Faqe `Models` që shfaq vetëm veturat aktive dhe lejon filtrim sipas markës, tipit dhe karburantit.
+- Blog me postime, kategori, autor dhe fotografi.
+- Formë kontakti me validim, CSRF token, ruajtje në databazë dhe dërgim email-i nëse SMTP është konfiguruar.
+- Cookies për ruajtjen e emrit dhe email-it të fundit në formën e kontaktit.
+- PDO prepared statements për query më të sigurta.
 
 ## Teknologjitë e përdorura
 
 - PHP
-- HTML
-- CSS
+- MySQL
+- PDO
+- HTML5
+- CSS3
 - JavaScript
 - PHP Sessions
+- Cookies
 - XAMPP / Apache
 - Font Awesome
-- Git dhe GitHub
 
 ## Struktura e projektit
 
 ```text
-CarMarketplace/
+CarMarketPlace/
 │
 ├── classes/
 │   ├── carCL.php
 │   └── userCl.php
 │
-├── img/
-│   └── fotografitë e veturave
+├── database/
+│   └── car_marketplace.sql
 │
 ├── Includes/
 │   ├── header.php
 │   └── footer.php
 │
 ├── Script/
-│   └── fajllat JavaScript
+│   ├── admin.js
+│   ├── blog.js
+│   ├── contact.js
+│   └── models.js
 │
 ├── Style/
+│   ├── style.css
+│   ├── admin.css
 │   ├── login.css
-│   └── fajllat CSS
+│   ├── models.css
+│   ├── contact.css
+│   └── rreth-nesh.css
 │
 ├── uploads/
-│   └── cars/
-│       └── fotografitë e ngarkuara nga admini
+│   ├── cars/
+│   └── blog/
 │
+├── add_car.php
 ├── admin.php
 ├── blog.php
+├── config.php
 ├── contact.php
+├── delete_car.php
+├── edit_car.php
 ├── index.php
 ├── login.php
 ├── logout.php
 ├── models.php
-├── posts.json
+├── register.php
 ├── rreth-nesh.php
+├── posts.json
 └── README.md
 ```
+
+## Databaza
+
+Emri i databazës në `config.php` është:
+
+```text
+car_marketplace
+```
+
+Tabelat kryesore të projektit janë:
+
+| Tabela | Qëllimi |
+|---|---|
+| `users` | Ruan përdoruesit, email-in, password-in e hash-uar dhe rolin `user/admin`. |
+| `cars` | Ruan veturat, çmimin, vitin, tipin, karburantin, fotografinë dhe statusin. |
+| `posts` | Ruan postimet e blogut, kategorinë, përmbajtjen, fotografinë dhe autorin. |
+| `contact_messages` | Ruan mesazhet nga forma e kontaktit dhe statusin e dërgimit të email-it. |
+
+`contact_messages` krijohet automatikisht nga `contact.php` nëse mungon. Për tabelat `users`, `cars` dhe `posts`, projekti pret file-in `database/car_marketplace.sql`.
+
+## Si të bëhet run në XAMPP
+
+1. Shkarko ose kopjo projektin në folderin:
+
+```text
+C:/xampp/htdocs/CarMarketPlace
+```
+
+2. Hape XAMPP Control Panel.
+3. Starto `Apache` dhe `MySQL`.
+4. Sigurohu që `config.php` ka këto vlera ose përshtati sipas kompjuterit tënd:
+
+```php
+$host = "127.0.0.1";
+$dbname = "car_marketplace";
+$dbUser = "root";
+$dbPass = "";
+$ports = [3306, 3307];
+```
+
+5. Hape projektin në browser:
+
+```text
+http://localhost/CarMarketPlace/index.php
+```
+
+6. Regjistro një përdorues të ri nga `register.php`.
+7. Për qasje në admin panel, vendos rolin e user-it si `admin` në databazë:
+
+```sql
+UPDATE users SET role = 'admin' WHERE username = 'username_i_userit';
+```
+
+8. Pastaj kyçu dhe hap:
+
+```text
+http://localhost/CarMarketPlace/admin.php
+```
+
+## Testimi i projektit
+
+| Testi | Çfarë duhet të ndodhë |
+|---|---|
+| Register me të dhëna valide | Krijohet user i ri në databazë. |
+| Login me të dhëna të sakta | User-i ridrejtohet në faqen përkatëse. |
+| Login gabim | Shfaqet mesazh gabimi. |
+| Shto veturë si admin | Vetura ruhet në databazë dhe foto në `uploads/cars/`. |
+| Edito veturë | Ndryshimet ruhen në databazë. |
+| Çaktivizo veturë | Vetura nuk shfaqet në `models.php`. |
+| Fshi veturë | Vetura dhe fotografia e saj fshihen. |
+| Filtro modelet | Shfaqen vetëm veturat që përputhen me filtrin. |
+| Dërgo kontakt | Mesazhi ruhet në `contact_messages`. |
+| Hyr në admin si user i zakonshëm | Qasja bllokohet/ridrejtohet. |
+
+
+
+## Autor / Grupi
+
+Gerti Parduzi
+Ermal Berisha
+Arbnor Dragaj
+orlind Bjaraktari
+Artin Mehana
+
+## Përfundim
+
+CarMarketPlace demonstron një aplikacion të plotë web me PHP dhe MySQL, duke përfshirë autentikim, role, admin panel, CRUD, upload fotografish, blog, kontakt dhe validim të të dhënave. Projekti është i përshtatshëm për prezantim dhe mbrojtje në lëndën e web-it.
