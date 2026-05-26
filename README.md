@@ -26,7 +26,7 @@ CarMarketPlace është një web aplikacion për prezantimin dhe menaxhimin e vet
 - CSS3
 - JavaScript
 - PHP Sessions
-
+- Cookies
 - XAMPP / Apache
 - Font Awesome
 
