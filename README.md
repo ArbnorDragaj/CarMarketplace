@@ -2,20 +2,7 @@
 
 CarMarketPlace është një web aplikacion për prezantimin dhe menaxhimin e veturave. Projekti është ndërtuar me PHP, MySQL, HTML, CSS dhe JavaScript. Përdoruesit mund të shohin modelet e veturave, të filtrojnë rezultatet, të lexojnë postime në blog dhe të dërgojnë mesazhe kontakti. Admini ka panel të veçantë për menaxhimin e veturave dhe postimeve.
 
-## Funksionalitetet kryesore
 
-- Faqe kryesore me prezantim të platformës.
-- Faqe `Rreth Nesh` me mision, vizion dhe përshkrim të funksionaliteteve.
-- Sistem `Login` dhe `Register` me role `user` dhe `admin`.
-- Password-at ruhen të hash-uar me `password_hash()`.
-- Login-i verifikohet me `password_verify()`.
-- Panel admin për shtim, editim, aktivizim/çaktivizim dhe fshirje të veturave.
-- Upload i fotografive të veturave në `uploads/cars/`.
-- Faqe `Models` që shfaq vetëm veturat aktive dhe lejon filtrim sipas markës, tipit dhe karburantit.
-- Blog me postime, kategori, autor dhe fotografi.
-- Formë kontakti me validim, CSRF token, ruajtje në databazë dhe dërgim email-i nëse SMTP është konfiguruar.
-- Cookies për ruajtjen e emrit dhe email-it të fundit në formën e kontaktit.
-- PDO prepared statements për query më të sigurta.
 
 ## Teknologjitë e përdorura
 
