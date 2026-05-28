@@ -1,16 +1,9 @@
 <?php
-// Mund të shtosh variabla këtu për të ndryshuar titullin e faqes në mënyrë dinamike
 $site_name = "CarMarketPlace";
 
-
-session_start();
-
-
-if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
-    exit();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="sq">
@@ -18,9 +11,8 @@ if (!isset($_SESSION['user'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title ?? 'CarMarketPlace'; ?></title>
-    <link rel="stylesheet" href="Style/index.css">
-    <link rel="stylesheet" href="Style/style.css">
-
+    <link rel="stylesheet" href="Style/style.css?v=3">
+    <link rel="stylesheet" href="Style/index.css?v=2">
 </head>
 <body>
     <?php include 'Includes/header.php'; ?>
@@ -51,8 +43,7 @@ Quality, Guarantee, <strong>Stability</strong> with Us
 <br>
 <br>
 <br>
-<br>
-<br>
-    <?php include 'Includes/footer.php'; ?>
 
+    <?php include 'Includes/footer.php'; ?>
 </body>
+</html>

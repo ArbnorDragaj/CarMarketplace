@@ -6,6 +6,16 @@ if (session_status() === PHP_SESSION_NONE) {
 if (!isset($site_name)) {
     $site_name = "CarMarketPlace";
 }
+
+if (!isset($currentPage)) {
+    $currentPage = basename($_SERVER['PHP_SELF']);
+}
+
+if (!function_exists('navActiveClass')) {
+    function navActiveClass($page, $currentPage) {
+        return $page === $currentPage ? 'active' : '';
+    }
+}
 ?>
 
 <header class="main-header">
@@ -13,7 +23,7 @@ if (!isset($site_name)) {
 
         <div class="logo">
             <h1>
-                <a href="index.php"><?php echo htmlspecialchars($site_name); ?></a>
+                <a href="index.php"><?php echo htmlspecialchars($site_name, ENT_QUOTES, 'UTF-8'); ?></a>
             </h1>
         </div>
 
@@ -21,29 +31,28 @@ if (!isset($site_name)) {
             <ul class="nav-links">
                 <li><a href="index.php">Ballina</a></li>
                 <li><a href="rreth-nesh.php">Rreth Nesh</a></li>
-                <li><a href="sherbimet.php">Shërbimet</a></li>
-                <li><a href="kontakti.php">Kontakti</a></li>
+                <li><a href="models.php">Shërbimet</a></li>
+                <li><a href="contact.php">Kontakti</a></li>
                 <li><a href="blog.php" class="blog-link">Blog</a></li>
                 <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-    <li>
-        <a href="admin.php" class="<?php echo ($currentPage == 'admin.php') ? 'active' : ''; ?>">
-            Admin
-        </a>
-    </li>
-<?php endif; ?>
+                    <li>
+                        <a href="admin.php" class="<?php echo navActiveClass('admin.php', $currentPage); ?>">
+                            Admin
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
         </nav>
 
         <div class="user-actions">
             <?php if (isset($_SESSION['user'])): ?>
                 <div class="user-box">
-                    <span class="user-name">👤 <?php echo htmlspecialchars($_SESSION['user']); ?></span>
+                    <span class="user-name"><?php echo htmlspecialchars($_SESSION['user'], ENT_QUOTES, 'UTF-8'); ?></span>
                     <a href="logout.php" class="logout-btn">Logout</a>
                 </div>
             <?php else: ?>
-                <a href="login.php" class="login-btn">Kyçu</a>
+                <a href="login.php" class="login-btn">Kycu</a>
             <?php endif; ?>
-
         </div>
 
     </div>
